@@ -1,27 +1,20 @@
 version: "3.3"
 
 services:
-  erp-purchase-service:
-    build: "."
-    restart: always
-    tty: true
-    depends_on:
-      - db
-    env_file:
-      - '../distributed-system-go/.env'
-    ports:
-      - 0.0.0.0:5000:5000
-    volumes:
-      - ../distributed-system-go:/go/src/app
-
   db:
-   image: postgres:10-alpine
+   image: postgres:14.1-alpine
+   container_name: postgres
    restart: always
    tty: true
    volumes:
      - ../.pgdata:/var/lib/postgresql/data
    environment:
-     - POSTGRES_PASSWORD=root
-     - POSTGRES_DB=postgres
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=secret
+     - POSTGRES_DB=distributed-system
    ports:
      - 0.0.0.0:5432:5432
+
+volumes:
+  .pgdata:
+    driver: local
