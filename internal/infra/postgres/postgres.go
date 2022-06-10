@@ -13,8 +13,9 @@ import (
 
 var db *sql.DB
 
-func Init(ctx context.Context, host string) {
+func Init(ctx context.Context, host string) *sql.DB {
 	db, err := sql.Open("nrpostgres", host)
+
 	if err != nil {
 		log.Panicf("Connecting to database: %+v", err)
 	}
@@ -33,7 +34,9 @@ func Init(ctx context.Context, host string) {
 		log.Panicf("Error connecting migrator %+v", err)
 	}
 	if err := m.Up(); err != nil {
-		log.Panicf("Error making the migration %+v", err)
+		if string(err.Error()) != "no change" {
+			log.Panicf("Error making the migration -> %+v", err)
+		}
 	}
-
+	return db
 }

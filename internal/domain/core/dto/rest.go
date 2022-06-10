@@ -17,3 +17,9 @@ type OrderRequest struct {
 	Installment int8            `form:"installment" binding:"required"`
 	Method      string          `form:"method" binding:"required"`
 }
+
+type MethodResponse struct {
+	Id           int64  `json:"id"`
+	Method       string `json:"method"`
+	Installments int64  `json:"installments"`
+}

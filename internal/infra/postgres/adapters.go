@@ -9,14 +9,14 @@ import (
 	"golang.org/x/net/context"
 )
 
-func New() *Adapter {
+func New(dataBase *sql.DB) *Adapter {
 	return &Adapter{
-		db: db,
+		Db: dataBase,
 	}
 }
 
 type Adapter struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 func (a *Adapter) GetAllMethods(ctx context.Context) ([]entities.Method, error) {
@@ -24,7 +24,7 @@ func (a *Adapter) GetAllMethods(ctx context.Context) ([]entities.Method, error) 
 		SELECT id, name, installment FROM methods;
 	`
 
-	rows, err := a.db.QueryContext(ctx, sqlStmt)
+	rows, err := a.Db.QueryContext(ctx, sqlStmt)
 	defer rows.Close()
 
 	var methods []entities.Method
