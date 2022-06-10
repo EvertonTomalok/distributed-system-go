@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/evertontomalok/distributed-system-go/src/config"
-	"github.com/evertontomalok/distributed-system-go/src/ui/rest"
+	config "github.com/evertontomalok/distributed-system-go/internal/app"
+	"github.com/evertontomalok/distributed-system-go/internal/ui/rest"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

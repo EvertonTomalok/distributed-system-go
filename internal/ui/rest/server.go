@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/evertontomalok/distributed-system-go/internal/config"
+	config "github.com/evertontomalok/distributed-system-go/internal/app"
 	"github.com/evertontomalok/distributed-system-go/internal/ui/rest/controllers"
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +18,7 @@ func Router() *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/", controllers.Home)
+	router.POST("/orders", controllers.PostOrder)
 	router.GET("/orders/:userId", controllers.GetOrdersByUserId)
 
 	return router

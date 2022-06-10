@@ -5,11 +5,28 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 )
+
+func PostOrder(c *gin.Context) {
+	order := dto.OrderRequest{}
+
+	err := c.ShouldBind(&order)
+
+	if err == nil {
+		fmt.Println(order.Installment)
+		fmt.Println(order.Method)
+		fmt.Println(order.Value)
+		fmt.Println(order.UserId)
+	} else {
+		fmt.Println(err)
+	}
+
+	c.String(http.StatusOK, "Ok")
+}
 
 func GetOrdersByUserId(c *gin.Context) {
 	userId := c.Param("userId")
@@ -26,11 +43,11 @@ func GetOrdersByUserId(c *gin.Context) {
 
 	value, _ := decimal.NewFromString("10.00")
 
-	order := domain.Order{
+	order := entities.Order{
 		UserId: userId,
 		Value:  value,
 		Status: true,
-		Method: domain.Method{
+		Method: entities.Method{
 			Name:        "credit_card",
 			Installment: 1,
 		},
