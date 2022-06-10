@@ -43,3 +43,14 @@ func (a *Adapter) GetAllMethods(ctx context.Context) ([]entities.Method, error) 
 	}
 	return methods, nil
 }
+
+func (a *Adapter) GetMethodByNameAndInstallment(ctx context.Context, methodName string, installment int) (entities.Method, error) {
+	sqlStmt := `
+		SELECT id, name, installment FROM methods WHERE name = $1 AND installment = $2;
+	`
+	_, err := a.Db.QueryContext(ctx, sqlStmt, methodName, installment)
+	if err != nil {
+		return entities.Method{}, err
+	}
+	return entities.Method{}, nil
+}
