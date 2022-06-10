@@ -44,9 +44,11 @@ func GetOrdersByUserId(c *gin.Context) {
 	value, _ := decimal.NewFromString("10.00")
 
 	order := entities.Order{
-		UserId: userId,
-		Value:  value,
-		Status: true,
+		ID:       "e53c0252-1441-420c-8c01-9a22ae2005e2",
+		UserId:   userId,
+		Value:    value,
+		Status:   true,
+		MethodId: 1,
 		Method: entities.Method{
 			Name:        "credit_card",
 			Installment: 1,
@@ -54,6 +56,7 @@ func GetOrdersByUserId(c *gin.Context) {
 	}
 
 	orderResponse := dto.OrderResponse{
+		Id:          order.ID,
 		UserId:      order.UserId,
 		Value:       order.Value,
 		Installment: order.Method.Installment,

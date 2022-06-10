@@ -1,28 +1,39 @@
 package app
 
 import (
-	"log"
+	"context"
 
+	log "github.com/sirupsen/logrus"
+
+	"github.com/evertontomalok/distributed-system-go/internal/infra/postgres"
 	"github.com/spf13/viper"
 )
 
-type ServerConfig struct {
-	Port string
-	Host string
+type Config struct {
+	Port     string
+	Host     string
+	Postgres struct {
+		Host string
+	}
 }
 
-func ServerConfigure() ServerConfig {
+func Configure() Config {
 	const LocalHost = "0.0.0.0"
 
 	viper.SetDefault("Host", LocalHost)
 	viper.SetDefault("Port", "5000")
+	viper.SetDefault("Postgres.Host", "postgres://postgres:secret@127.0.0.1:5432/distributed-system?sslmode=disable")
 
 	viper.AutomaticEnv()
 
-	var srvCfg ServerConfig
-	if err := viper.Unmarshal(&srvCfg); err != nil {
-		log.Panicf("It was impossible configure Server. %+v", err)
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		log.Errorf("It was impossible configure Server. %+v", err)
 	}
 
-	return srvCfg
+	return cfg
+}
+
+func InitDB(ctx context.Context, cfg Config) {
+	postgres.Init(ctx, cfg.Postgres.Host)
 }

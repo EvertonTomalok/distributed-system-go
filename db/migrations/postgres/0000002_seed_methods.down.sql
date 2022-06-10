@@ -1,0 +1,1 @@
+DELETE FROM methods WHERE method in ("credit_card", "debit_card", "cash", "transfer");

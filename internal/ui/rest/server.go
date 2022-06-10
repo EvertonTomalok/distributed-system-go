@@ -24,17 +24,17 @@ func Router() *gin.Engine {
 	return router
 }
 
-func RunServer(ctx context.Context, serverConfig config.ServerConfig) {
+func RunServer(ctx context.Context, config config.Config) {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 
 	server := &http.Server{
-		Addr:    net.JoinHostPort(serverConfig.Host, serverConfig.Port),
+		Addr:    net.JoinHostPort(config.Host, config.Port),
 		Handler: Router(),
 	}
 
 	go func() {
-		log.Printf("Server started at %s:%s", serverConfig.Host, serverConfig.Port)
+		log.Printf("Server started at %s:%s", config.Host, config.Port)
 
 		if err := server.ListenAndServe(); err != nil {
 			log.Panicf("Error trying to start server. %+v", err)
