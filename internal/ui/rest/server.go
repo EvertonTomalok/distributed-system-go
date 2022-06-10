@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/evertontomalok/distributed-system-go/src/config"
-	"github.com/evertontomalok/distributed-system-go/src/controllers"
+	"github.com/evertontomalok/distributed-system-go/internal/config"
+	"github.com/evertontomalok/distributed-system-go/internal/ui/rest/controllers"
 	"github.com/gin-gonic/gin"
 )
 
