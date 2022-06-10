@@ -5,7 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	"golang.org/x/net/context"
 )
 

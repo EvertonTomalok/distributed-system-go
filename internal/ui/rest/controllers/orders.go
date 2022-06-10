@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 )
