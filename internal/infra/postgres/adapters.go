@@ -48,9 +48,10 @@ func (a *Adapter) GetMethodByNameAndInstallment(ctx context.Context, methodName 
 	sqlStmt := `
 		SELECT id, name, installment FROM methods WHERE name = $1 AND installment = $2;
 	`
-	_, err := a.Db.QueryContext(ctx, sqlStmt, methodName, installment)
+	method := entities.Method{}
+	err := a.Db.QueryRowContext(ctx, sqlStmt, methodName, installment).Scan(&method.ID, &method.Name, &method.Installment)
 	if err != nil {
 		return entities.Method{}, err
 	}
-	return entities.Method{}, nil
+	return method, nil
 }

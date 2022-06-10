@@ -37,5 +37,6 @@ func Configure() Config {
 
 func InitDB(ctx context.Context, cfg Config) {
 	database := postgres.Init(ctx, cfg.Postgres.Host)
-	methods.MethodsDBAdapter = postgres.New(database)
+	adapter := postgres.New(database)
+	methods.MethodsDBAdapter = adapter
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
+	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 )
@@ -17,6 +18,8 @@ func PostOrder(c *gin.Context) {
 	err := c.ShouldBind(&order)
 
 	if err == nil {
+		orderId, _ := ordersRepository.SaveOrder(c.Request.Context(), order)
+		fmt.Printf(orderId)
 		fmt.Println(order.Installment)
 		fmt.Println(order.Method)
 		fmt.Println(order.Value)
