@@ -15,6 +15,7 @@ var runCmd = &cobra.Command{
 		config := application.Configure()
 
 		application.InitDB(ctx, config)
+		application.InitKafka(ctx, config)
 		rest.RunServer(ctx, config)
 	},
 }

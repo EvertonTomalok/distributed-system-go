@@ -18,6 +18,7 @@ var (
 	logger = watermill.NewStdLogger(false, false)
 )
 
+// The publisher will be injected when some command starts (server, wokers, orchestrator, etc.), by the Method NewPublisher
 var Publisher message.Publisher
 
 func NewSubscriber(consumerGroup string, kafkaHost string, kafkaPort string) *kafka.Subscriber {

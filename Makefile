@@ -6,3 +6,6 @@ setup-down:
 
 logs:
 	docker-compose logs -f
+
+server:
+	go run . server
