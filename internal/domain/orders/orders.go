@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
@@ -45,7 +47,11 @@ func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (string, erro
 	}
 
 	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
-		kafkaAdapter.PublishOrderMessageToTopic(topic, order)
+		err := kafkaAdapter.PublishOrderMessageToTopic(topic, order)
+
+		if err != nil {
+			log.Errorf("%+v\n\n", err)
+		}
 	}
 
 	return orderId, nil
