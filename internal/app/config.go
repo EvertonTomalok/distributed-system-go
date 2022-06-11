@@ -7,6 +7,7 @@ import (
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/orders"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/postgres"
 	"github.com/spf13/viper"
 )
@@ -17,6 +18,10 @@ type Config struct {
 	Postgres struct {
 		Host string
 	}
+	Kafka struct {
+		Host string
+		Port string
+	}
 }
 
 func Configure() Config {
@@ -25,6 +30,8 @@ func Configure() Config {
 	viper.SetDefault("Host", LocalHost)
 	viper.SetDefault("Port", "5000")
 	viper.SetDefault("Postgres.Host", "postgres://postgres:secret@127.0.0.1:5432/distributed-system?sslmode=disable")
+	viper.SetDefault("Kafka.Host", "127.0.0.1")
+	viper.SetDefault("Kafka.Port", "29092")
 
 	viper.AutomaticEnv()
 
@@ -32,6 +39,8 @@ func Configure() Config {
 	if err := viper.Unmarshal(&cfg); err != nil {
 		log.Errorf("It was impossible configure Server. %+v", err)
 	}
+
+	log.Info("Configuration is ready!")
 
 	return cfg
 }
@@ -43,4 +52,10 @@ func InitDB(ctx context.Context, cfg Config) {
 	// Dependency Injections
 	methods.MethodsDBAdapter = adapter
 	orders.OrdersDBAdapter = adapter
+	log.Infof("Database connection is ready at [%s***:%s]", cfg.Postgres.Host[0:2], cfg.Port)
+}
+
+func InitKafka(ctx context.Context, cfg Config) {
+	kafka.Publisher = kafka.NewPublisher(cfg.Kafka.Host, cfg.Kafka.Port)
+	log.Infof("Kafka is ready at [%s***:%s]", cfg.Kafka.Host[0:2], cfg.Kafka.Port)
 }
