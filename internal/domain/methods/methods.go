@@ -8,6 +8,8 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/ports"
 )
 
+// The adapter will be injected when the command starts the program. See the injection in
+// github.com/evertontomalok/distributed-system-go/internal/app/config::InitDb()
 var (
 	MethodsDBAdapter ports.MethodsPort
 )

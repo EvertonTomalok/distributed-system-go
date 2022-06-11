@@ -12,6 +12,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+// The adapter will be injected when the command starts the program. See the injection in
+// github.com/evertontomalok/distributed-system-go/internal/app/config::InitDb()
 var (
 	OrdersDBAdapter ports.OrdersPort
 )
