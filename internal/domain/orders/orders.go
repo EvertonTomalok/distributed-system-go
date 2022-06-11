@@ -2,6 +2,7 @@ package orders
 
 import (
 	"context"
+	"time"
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
@@ -20,12 +21,16 @@ func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (string, erro
 		return "", err
 	}
 
+	now := time.Now()
+
 	orderUUID := uuid.NewV4().String()
 	order := entities.Order{
-		ID:       orderUUID,
-		Value:    orderRequest.Value,
-		MethodId: method.ID,
-		UserId:   orderRequest.UserId,
+		ID:        orderUUID,
+		Value:     orderRequest.Value,
+		MethodId:  method.ID,
+		UserId:    orderRequest.UserId,
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	orderId, err := OrdersDBAdapter.PostOrder(ctx, order)

@@ -19,11 +19,14 @@ func PostOrder(c *gin.Context) {
 
 	if err == nil {
 		orderId, err := ordersRepository.SaveOrder(c.Request.Context(), orderRequest)
-		fmt.Printf(orderId, err)
-		c.String(http.StatusOK, orderId)
+		if err != nil {
+			c.AbortWithError(http.StatusNotFound, err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"order_id": orderId})
 		return
 	}
-	c.String(http.StatusNotModified, "hi")
+	c.String(http.StatusNotFound, "Something went wrong. Try again.")
 }
 
 func GetOrdersByUserId(c *gin.Context) {

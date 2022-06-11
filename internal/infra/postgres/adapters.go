@@ -3,7 +3,6 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -66,15 +65,14 @@ func (a *Adapter) PostOrder(ctx context.Context, order entities.Order) (string, 
 		RETURNING id;
 	`
 
-	now := time.Now()
 	_, err := a.Db.Exec(
 		sqlStmt,
 		order.ID,
 		order.Value,
 		order.MethodId,
 		order.UserId,
-		now,
-		now,
+		order.CreatedAt,
+		order.UpdatedAt,
 	)
 
 	if err != nil {
