@@ -14,6 +14,7 @@ type MethodsPort interface {
 
 type OrdersPort interface {
 	PostOrder(ctx context.Context, orderRequest entities.Order) (string, error)
+	GetOrdersByUserId(ctx context.Context, userId string, offset int64, limit int64) ([]entities.Order, error)
 }
 
 type DB interface {

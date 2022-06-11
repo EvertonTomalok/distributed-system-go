@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -12,7 +13,7 @@ type Order struct {
 	MethodId  int64
 	Method    Method
 	UserId    string
-	Status    bool
+	Status    sql.NullBool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -1,15 +1,12 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	"github.com/gin-gonic/gin"
-	"github.com/shopspring/decimal"
 )
 
 func PostOrder(c *gin.Context) {
@@ -31,38 +28,31 @@ func PostOrder(c *gin.Context) {
 
 func GetOrdersByUserId(c *gin.Context) {
 	userId := c.Param("userId")
-	offset, err := strconv.Atoi(c.Query("offset"))
+	offset, err := strconv.ParseInt(c.Query("offset"), 0, 64)
 	if err != nil {
 		offset = 0
 	}
-	limit, err := strconv.Atoi(c.Query("limit"))
+	limit, err := strconv.ParseInt(c.Query("limit"), 0, 64)
 	if err != nil {
 		limit = 100
 	}
 
-	fmt.Println(offset, limit)
+	orders, err := ordersRepository.OrdersDBAdapter.GetOrdersByUserId(c.Request.Context(), userId, offset, limit)
 
-	value, _ := decimal.NewFromString("10.00")
+	var ordersResponse []dto.OrderResponse
 
-	order := entities.Order{
-		ID:       "e53c0252-1441-420c-8c01-9a22ae2005e2",
-		UserId:   userId,
-		Value:    value,
-		Status:   true,
-		MethodId: 1,
-		Method: entities.Method{
-			Name:        "credit_card",
-			Installment: 1,
-		},
+	for _, order := range orders {
+		ordersResponse = append(
+			ordersResponse,
+			dto.OrderResponse{
+				Id:          order.ID,
+				UserId:      order.UserId,
+				Value:       order.Value,
+				Installment: order.MethodId,
+				Status:      order.Status,
+				Method:      string(order.MethodId),
+			},
+		)
 	}
-
-	orderResponse := dto.OrderResponse{
-		Id:          order.ID,
-		UserId:      order.UserId,
-		Value:       order.Value,
-		Installment: order.Method.Installment,
-		Status:      order.Status,
-		Method:      order.Method.Name,
-	}
-	c.JSON(http.StatusOK, orderResponse)
+	c.JSON(http.StatusOK, ordersResponse)
 }

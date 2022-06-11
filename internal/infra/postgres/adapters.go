@@ -82,3 +82,39 @@ func (a *Adapter) PostOrder(ctx context.Context, order entities.Order) (string, 
 
 	return order.ID, nil
 }
+
+func (a *Adapter) GetOrdersByUserId(ctx context.Context, userId string, offset int64, limit int64) ([]entities.Order, error) {
+	sqlStmt := `
+		SELECT 
+			id, value, method_id, user_id, status, created_at, updated_at 
+		FROM orders;
+	`
+
+	var orders []entities.Order
+
+	rows, err := a.Db.QueryContext(ctx, sqlStmt)
+	defer rows.Close()
+
+	if err != nil {
+		log.Info("Any method was found.")
+		return orders, nil
+	}
+
+	for rows.Next() {
+		var order entities.Order
+		if err := rows.Scan(
+			&order.ID,
+			&order.Value,
+			&order.MethodId,
+			&order.UserId,
+			&order.Status,
+			&order.CreatedAt,
+			&order.UpdatedAt,
+		); err != nil {
+			log.Error("Error scanning method: +v", err)
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+	return orders, nil
+}
