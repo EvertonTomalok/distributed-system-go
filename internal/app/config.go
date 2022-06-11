@@ -52,10 +52,10 @@ func InitDB(ctx context.Context, cfg Config) {
 	// Dependency Injections
 	methods.MethodsDBAdapter = adapter
 	orders.OrdersDBAdapter = adapter
-	log.Info("Database connection is ready!")
+	log.Infof("Database connection is ready at [%s***:%s]", cfg.Postgres.Host[0:2], cfg.Port)
 }
 
 func InitKafka(ctx context.Context, cfg Config) {
 	kafka.Publisher = kafka.NewPublisher(cfg.Kafka.Host, cfg.Kafka.Port)
-	log.Info("Kafka is ready!")
+	log.Infof("Kafka is ready at [%s***:%s]", cfg.Kafka.Host[0:2], cfg.Kafka.Port)
 }

@@ -51,7 +51,24 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
       KAFKA_CLUSTERS_0_NAME: "KAFKA LOCAL"
       KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
-
+  web:
+    platform: linux/x86_64
+    container_name: web
+    build: .
+    depends_on:
+      - kafka
+      - db
+    environment:
+      - POSTGRES_HOST=postgres://postgres:secret@db:5432/distributed-system?sslmode=disable
+      - HOST=0.0.0.0
+      - PORT=5000
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=29092
+    command: go run . server
+    ports:
+      - "0.0.0.0:5000:5000"
+    volumes:
+      -  .:/go/src/app
 volumes:
   .pgdata:
     driver: local
