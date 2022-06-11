@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +18,12 @@ func PostOrder(c *gin.Context) {
 	if err == nil {
 		orderId, err := ordersRepository.SaveOrder(c.Request.Context(), orderRequest)
 		if err != nil {
-			c.AbortWithError(http.StatusNotFound, err)
+			switch err {
+			case errors.InvalidMethod:
+				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Method with installmens passed is invalid."})
+			default:
+				c.AbortWithError(http.StatusNotFound, err)
+			}
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"order_id": orderId})

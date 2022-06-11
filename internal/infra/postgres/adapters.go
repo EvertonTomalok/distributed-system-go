@@ -87,12 +87,12 @@ func (a *Adapter) GetOrdersByUserId(ctx context.Context, userId string, offset i
 	sqlStmt := `
 		SELECT 
 			id, value, method_id, user_id, status, created_at, updated_at 
-		FROM orders;
+		FROM orders WHERE user_id = $1 OFFSET $2 LIMIT $3;
 	`
 
 	var orders []entities.Order
 
-	rows, err := a.Db.QueryContext(ctx, sqlStmt)
+	rows, err := a.Db.QueryContext(ctx, sqlStmt, userId, offset, limit)
 	defer rows.Close()
 
 	if err != nil {
