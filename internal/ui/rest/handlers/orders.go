@@ -24,7 +24,6 @@ func PostOrder(c *gin.Context) {
 		if err != nil {
 			switch err {
 			case errors.InvalidMethod:
-				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			case errors.InvalidOrder:
 				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			default:
@@ -32,17 +31,8 @@ func PostOrder(c *gin.Context) {
 			}
 			return
 		}
-		var wg sync.WaitGroup
-		for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
-			wg.Add(1)
 
-			go func(t string, o entities.Order) {
-				defer wg.Done()
-				kafkaAdapter.PublishOrderMessageToTopic(t, o)
-			}(topic, order)
-		}
-
-		wg.Wait()
+		triggerValidation(order)
 
 		c.JSON(http.StatusOK, gin.H{"order_id": order.ID})
 		return
@@ -52,12 +42,17 @@ func PostOrder(c *gin.Context) {
 
 func GetOrdersByUserId(c *gin.Context) {
 	userId := c.Param("userId")
+
 	offset, err := strconv.ParseInt(c.Query("offset"), 0, 64)
 	if err != nil {
 		offset = 0
 	}
+
 	limit, err := strconv.ParseInt(c.Query("limit"), 0, 64)
 	if err != nil {
+		limit = 100
+	}
+	if limit > 100 {
 		limit = 100
 	}
 
@@ -79,4 +74,18 @@ func GetOrdersByUserId(c *gin.Context) {
 		)
 	}
 	c.JSON(http.StatusOK, ordersResponse)
+}
+
+func triggerValidation(order entities.Order) {
+	var wg sync.WaitGroup
+	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
+		wg.Add(1)
+
+		go func(t string, o entities.Order) {
+			defer wg.Done()
+			kafkaAdapter.PublishOrderMessageToTopic(t, o)
+		}(topic, order)
+	}
+
+	wg.Wait()
 }
