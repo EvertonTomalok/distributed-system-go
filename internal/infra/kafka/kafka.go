@@ -41,10 +41,10 @@ func NewSubscriber(consumerGroup string, kafkaHost string, kafkaPort string) *ka
 }
 
 func NewPublisher(kafkaHost string, kafkaPort string) *kafka.Publisher {
-	kakfaBrokerUrl := fmt.Sprintf("%s:%s", kafkaHost, kafkaPort)
+	kafkaBrokerUrl := fmt.Sprintf("%s:%s", kafkaHost, kafkaPort)
 	publisher, err := kafka.NewPublisher(
 		kafka.PublisherConfig{
-			Brokers:   []string{kakfaBrokerUrl},
+			Brokers:   []string{kafkaBrokerUrl},
 			Marshaler: kafka.DefaultMarshaler{},
 		},
 		logger,

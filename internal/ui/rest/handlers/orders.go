@@ -1,12 +1,17 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 
+	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
+	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +21,7 @@ func PostOrder(c *gin.Context) {
 	err := c.ShouldBind(&orderRequest)
 
 	if err == nil {
-		orderId, err := ordersRepository.SaveOrder(c.Request.Context(), orderRequest)
+		order, err := ordersRepository.SaveOrder(c.Request.Context(), orderRequest)
 		if err != nil {
 			switch err {
 			case errors.InvalidMethod:
@@ -28,7 +33,19 @@ func PostOrder(c *gin.Context) {
 			}
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"order_id": orderId})
+		var wg sync.WaitGroup
+		for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
+			wg.Add(1)
+
+			go func(t string, o entities.Order) {
+				defer wg.Done()
+				fmt.Println(kafkaAdapter.PublishOrderMessageToTopic(t, o))
+			}(topic, order)
+		}
+
+		wg.Wait()
+
+		c.JSON(http.StatusOK, gin.H{"order_id": order.ID})
 		return
 	}
 	c.String(http.StatusNotFound, "Something went wrong. Try again.")
