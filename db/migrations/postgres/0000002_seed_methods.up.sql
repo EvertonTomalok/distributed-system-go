@@ -1,0 +1,15 @@
+INSERT INTO methods(id, name, installment) VALUES (1, 'credit_card', 1);
+INSERT INTO methods(id, name, installment) VALUES (2, 'credit_card', 2);
+INSERT INTO methods(id, name, installment) VALUES (3, 'credit_card', 3);
+INSERT INTO methods(id, name, installment) VALUES (4, 'credit_card', 4);
+INSERT INTO methods(id, name, installment) VALUES (5, 'credit_card', 5);
+INSERT INTO methods(id, name, installment) VALUES (6, 'credit_card', 6);
+INSERT INTO methods(id, name, installment) VALUES (7, 'credit_card', 7);
+INSERT INTO methods(id, name, installment) VALUES (8, 'credit_card', 8);
+INSERT INTO methods(id, name, installment) VALUES (9, 'credit_card', 9);
+INSERT INTO methods(id, name, installment) VALUES (10, 'credit_card', 10);
+INSERT INTO methods(id, name, installment) VALUES (11, 'credit_card', 11);
+INSERT INTO methods(id, name, installment) VALUES (12, 'credit_card', 12);
+INSERT INTO methods(id, name, installment) VALUES (13, 'debit_card', 1);
+INSERT INTO methods(id, name, installment) VALUES (14, 'transfer', 1);
+INSERT INTO methods(id, name, installment) VALUES (15, 'cash', 1);

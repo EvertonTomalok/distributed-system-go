@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/evertontomalok/distributed-system-go/src/config"
-	"github.com/evertontomalok/distributed-system-go/src/ui/rest"
+	application "github.com/evertontomalok/distributed-system-go/internal/app"
+	"github.com/evertontomalok/distributed-system-go/internal/ui/rest"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -12,9 +12,10 @@ var runCmd = &cobra.Command{
 	Short: "Run http server",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := cmd.Context()
-		srvConfig := config.ServerConfigure()
+		config := application.Configure()
 
-		rest.RunServer(ctx, srvConfig)
+		application.InitDB(ctx, config)
+		rest.RunServer(ctx, config)
 	},
 }
 
