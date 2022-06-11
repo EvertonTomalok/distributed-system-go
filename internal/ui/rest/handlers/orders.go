@@ -13,22 +13,17 @@ import (
 )
 
 func PostOrder(c *gin.Context) {
-	order := dto.OrderRequest{}
+	orderRequest := dto.OrderRequest{}
 
-	err := c.ShouldBind(&order)
+	err := c.ShouldBind(&orderRequest)
 
 	if err == nil {
-		orderId, _ := ordersRepository.SaveOrder(c.Request.Context(), order)
-		fmt.Printf(orderId)
-		fmt.Println(order.Installment)
-		fmt.Println(order.Method)
-		fmt.Println(order.Value)
-		fmt.Println(order.UserId)
-	} else {
-		fmt.Println(err)
+		orderId, err := ordersRepository.SaveOrder(c.Request.Context(), orderRequest)
+		fmt.Printf(orderId, err)
+		c.String(http.StatusOK, orderId)
+		return
 	}
-
-	c.String(http.StatusOK, "Ok")
+	c.String(http.StatusNotModified, "hi")
 }
 
 func GetOrdersByUserId(c *gin.Context) {

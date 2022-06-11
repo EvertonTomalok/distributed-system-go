@@ -14,7 +14,7 @@ type OrderResponse struct {
 type OrderRequest struct {
 	Value       decimal.Decimal `form:"value" binding:"required"`
 	UserId      string          `form:"user_id" binding:"required"`
-	Installment int8            `form:"installment" binding:"required"`
+	Installment int64           `form:"installment" binding:"required"`
 	Method      string          `form:"method" binding:"required"`
 }
 

@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/postgres"
 	"github.com/spf13/viper"
 )
@@ -39,4 +40,5 @@ func InitDB(ctx context.Context, cfg Config) {
 	database := postgres.Init(ctx, cfg.Postgres.Host)
 	adapter := postgres.New(database)
 	methods.MethodsDBAdapter = adapter
+	orders.OrdersDBAdapter = adapter
 }

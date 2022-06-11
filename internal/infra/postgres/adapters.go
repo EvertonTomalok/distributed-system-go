@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -44,7 +46,7 @@ func (a *Adapter) GetAllMethods(ctx context.Context) ([]entities.Method, error) 
 	return methods, nil
 }
 
-func (a *Adapter) GetMethodByNameAndInstallment(ctx context.Context, methodName string, installment int) (entities.Method, error) {
+func (a *Adapter) GetMethodByNameAndInstallment(ctx context.Context, methodName string, installment int64) (entities.Method, error) {
 	sqlStmt := `
 		SELECT id, name, installment FROM methods WHERE name = $1 AND installment = $2;
 	`
@@ -54,4 +56,31 @@ func (a *Adapter) GetMethodByNameAndInstallment(ctx context.Context, methodName 
 		return entities.Method{}, err
 	}
 	return method, nil
+}
+
+func (a *Adapter) PostOrder(ctx context.Context, order entities.Order) (string, error) {
+	sqlStmt := `
+		INSERT INTO 
+			orders (id, value, method_id, user_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id;
+	`
+
+	now := time.Now()
+	_, err := a.Db.Exec(
+		sqlStmt,
+		order.ID,
+		order.Value,
+		order.MethodId,
+		order.UserId,
+		now,
+		now,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	return order.ID, nil
 }
