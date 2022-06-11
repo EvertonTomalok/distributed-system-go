@@ -1,7 +1,7 @@
-setup:
+up:
 	docker-compose up -d
 
-setup-down:
+down:
 	docker-compose down
 
 logs:

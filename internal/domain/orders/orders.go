@@ -4,11 +4,13 @@ import (
 	"context"
 	"time"
 
+	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/ports"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
+	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -40,6 +42,10 @@ func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (string, erro
 
 	if err != nil {
 		return "", errors.InvalidOrder
+	}
+
+	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
+		kafkaAdapter.PublishOrderMessageToTopic(topic, order)
 	}
 
 	return orderId, nil

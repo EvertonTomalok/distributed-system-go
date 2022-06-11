@@ -55,7 +55,7 @@ func NewPublisher(kafkaHost string, kafkaPort string) *kafka.Publisher {
 	return publisher
 }
 
-func PublishMessage(topic string, order entities.Order) error {
+func PublishOrderMessageToTopic(topic string, order entities.Order) error {
 	msg, err := broker.NewOrderMessage(topic, order).Build()
 	if err != nil {
 		return err
