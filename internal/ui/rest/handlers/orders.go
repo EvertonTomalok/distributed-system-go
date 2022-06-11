@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
@@ -39,7 +38,7 @@ func PostOrder(c *gin.Context) {
 
 			go func(t string, o entities.Order) {
 				defer wg.Done()
-				fmt.Println(kafkaAdapter.PublishOrderMessageToTopic(t, o))
+				kafkaAdapter.PublishOrderMessageToTopic(t, o)
 			}(topic, order)
 		}
 
