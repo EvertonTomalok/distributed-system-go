@@ -37,7 +37,7 @@ func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (string, erro
 	orderId, err := OrdersDBAdapter.PostOrder(ctx, order)
 
 	if err != nil {
-		return "", err
+		return "", errors.InvalidOrder
 	}
 
 	return orderId, nil

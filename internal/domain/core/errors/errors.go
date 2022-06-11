@@ -25,4 +25,5 @@ func (e errorString) Code() string {
 var (
 	InternalError = New("INTERNAL_ERROR", "Something went wrong. Please, try again.")
 	InvalidMethod = New("INVALID_METHOD", "The method passed is invalid.")
+	InvalidOrder  = New("INVALID_ORDER", "The order is invalid.")
 )

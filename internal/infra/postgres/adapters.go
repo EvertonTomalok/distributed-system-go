@@ -86,8 +86,10 @@ func (a *Adapter) PostOrder(ctx context.Context, order entities.Order) (string, 
 func (a *Adapter) GetOrdersByUserId(ctx context.Context, userId string, offset int64, limit int64) ([]entities.Order, error) {
 	sqlStmt := `
 		SELECT 
-			id, value, method_id, user_id, status, created_at, updated_at 
-		FROM orders WHERE user_id = $1 OFFSET $2 LIMIT $3;
+			orders.id, orders.value, orders.method_id, orders.user_id, orders.status, orders.created_at, orders.updated_at, methods.name, methods.installment 
+		FROM orders
+		INNER JOIN methods ON orders.method_id = methods.id
+		WHERE user_id = $1 OFFSET $2 LIMIT $3;
 	`
 
 	var orders []entities.Order
@@ -96,6 +98,7 @@ func (a *Adapter) GetOrdersByUserId(ctx context.Context, userId string, offset i
 	defer rows.Close()
 
 	if err != nil {
+		fmt.Println(err)
 		log.Info("Any method was found.")
 		return orders, nil
 	}
@@ -110,6 +113,8 @@ func (a *Adapter) GetOrdersByUserId(ctx context.Context, userId string, offset i
 			&order.Status,
 			&order.CreatedAt,
 			&order.UpdatedAt,
+			&order.Method.Name,
+			&order.Method.Installment,
 		); err != nil {
 			log.Error("Error scanning method: +v", err)
 			return nil, err

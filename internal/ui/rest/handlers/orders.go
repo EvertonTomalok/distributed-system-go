@@ -20,7 +20,9 @@ func PostOrder(c *gin.Context) {
 		if err != nil {
 			switch err {
 			case errors.InvalidMethod:
-				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Method with installmens passed is invalid."})
+				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			case errors.InvalidOrder:
+				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			default:
 				c.AbortWithError(http.StatusNotFound, err)
 			}
@@ -54,9 +56,9 @@ func GetOrdersByUserId(c *gin.Context) {
 				Id:          order.ID,
 				UserId:      order.UserId,
 				Value:       order.Value,
-				Installment: order.MethodId,
+				Installment: int64(order.Method.Installment),
 				Status:      order.Status,
-				Method:      string(order.MethodId),
+				Method:      order.Method.Name,
 			},
 		)
 	}
