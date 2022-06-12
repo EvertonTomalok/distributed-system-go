@@ -69,10 +69,8 @@ func (m *OrderMessageBuilder) Build() (*message.Message, error) {
 }
 
 func ParseOrderMessage(msg *message.Message) (Order, error) {
-
 	metadata := Metadata{
-		EventId: msg.Metadata.Get("event_id"),
-
+		EventId:     msg.Metadata.Get("event_id"),
 		AggregateId: msg.Metadata.Get("aggregate_id"),
 		Timestamp:   msg.Metadata.Get("timestamp"),
 	}
