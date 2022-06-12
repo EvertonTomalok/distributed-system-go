@@ -27,8 +27,6 @@ services:
     container_name: kafka
     image: confluentinc/cp-kafka:latest
     ports:
-      # To learn about configuring Kafka for access across networks see
-      # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
       - "29092:29092"
       - "9092:9092"
     depends_on:

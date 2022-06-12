@@ -1,10 +1,10 @@
-up:
+setup:
 	docker-compose up -d db zookeeper kafka kafkaui
 
 down:
 	docker-compose down
 
-logs:
+setup-logs:
 	docker-compose logs -f db zookeeper kafka kafkaui
 
 server:
