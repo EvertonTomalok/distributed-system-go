@@ -29,8 +29,8 @@ func Configure() Config {
 
 	viper.SetDefault("Host", LocalHost)
 	viper.SetDefault("Port", "5000")
-	viper.SetDefault("Postgres.Host", "postgres://postgres:secret@127.0.0.1:5432/distributed-system?sslmode=disable")
-	viper.SetDefault("Kafka.Host", "127.0.0.1")
+	viper.SetDefault("Postgres.Host", "postgres://postgres:secret@db:5432/distributed-system?sslmode=disable")
+	viper.SetDefault("Kafka.Host", "kafka")
 	viper.SetDefault("Kafka.Port", "29092")
 
 	viper.AutomaticEnv()

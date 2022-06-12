@@ -4,15 +4,11 @@ import (
 	"context"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
-	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/ports"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
-	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -22,10 +18,10 @@ var (
 	OrdersDBAdapter ports.OrdersPort
 )
 
-func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (string, error) {
+func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (entities.Order, error) {
 	method, err := methods.MethodsDBAdapter.GetMethodByNameAndInstallment(ctx, orderRequest.Method, orderRequest.Installment)
 	if err != nil {
-		return "", errors.InvalidMethod
+		return entities.Order{}, errors.InvalidMethod
 	}
 
 	now := time.Now()
@@ -35,24 +31,17 @@ func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (string, erro
 		ID:        orderUUID,
 		Value:     orderRequest.Value,
 		MethodId:  method.ID,
+		Method:    method,
 		UserId:    orderRequest.UserId,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
 
-	orderId, err := OrdersDBAdapter.PostOrder(ctx, order)
+	_, errOrder := OrdersDBAdapter.PostOrder(ctx, order)
 
-	if err != nil {
-		return "", errors.InvalidOrder
+	if errOrder != nil {
+		return entities.Order{}, errors.InvalidOrder
 	}
 
-	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
-		err := kafkaAdapter.PublishOrderMessageToTopic(topic, order)
-
-		if err != nil {
-			log.Errorf("%+v\n\n", err)
-		}
-	}
-
-	return orderId, nil
+	return order, nil
 }

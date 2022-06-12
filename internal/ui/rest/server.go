@@ -5,11 +5,9 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 
 	config "github.com/evertontomalok/distributed-system-go/internal/app"
+	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/ui/rest/handlers"
 	"github.com/gin-gonic/gin"
 )
@@ -26,8 +24,7 @@ func Router() *gin.Engine {
 }
 
 func RunServer(ctx context.Context, config config.Config) {
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
+	done := utils.MakeDoneSignal()
 
 	server := &http.Server{
 		Addr:    net.JoinHostPort(config.Host, config.Port),
