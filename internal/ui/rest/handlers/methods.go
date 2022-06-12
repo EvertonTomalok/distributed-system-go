@@ -8,6 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// API Get Methods godoc
+// @Summary Get Methods
+// @Description Get available methods
+// @Tags methods
+// @Router /methods [get]
+// @Accept json
+// @Produce json
+// @Success 200 {object} []dto.MethodResponse
+// @Failure 500 "Something went wrong"
 func GetAllMethods(c *gin.Context) {
 	allMethods, err := methods.GetMethods(c.Request.Context())
 	if err != nil {

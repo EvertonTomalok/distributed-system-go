@@ -1,0 +1,118 @@
+definitions:
+  dto.MethodResponse:
+    properties:
+      id:
+        type: integer
+      installments:
+        type: integer
+      method:
+        type: string
+    type: object
+  dto.OrderRequest:
+    properties:
+      installment:
+        type: integer
+      method:
+        type: string
+      userId:
+        type: string
+      value:
+        type: number
+    required:
+    - installment
+    - method
+    - userId
+    - value
+    type: object
+  dto.OrderResponse:
+    properties:
+      id:
+        type: string
+      installment:
+        type: integer
+      method:
+        type: string
+      status:
+        type: boolean
+      user_id:
+        type: string
+      value:
+        type: number
+    type: object
+info:
+  contact: {}
+paths:
+  /methods:
+    get:
+      consumes:
+      - application/json
+      description: Get available methods
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.MethodResponse'
+            type: array
+        "500":
+          description: Something went wrong
+      summary: Get Methods
+      tags:
+      - methods
+  /orders:
+    post:
+      description: Create order
+      parameters:
+      - description: Order to create
+        in: body
+        name: Order
+        required: true
+        schema:
+          $ref: '#/definitions/dto.OrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: '{''order_id'': ''someid''}'
+        "400":
+          description: '{''error'': ''error description''}'
+        "404":
+          description: Something went wrong. Try again.
+      summary: Create Order
+      tags:
+      - order
+  /orders/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Get orders from User
+      parameters:
+      - description: The user id to search
+        in: path
+        name: userId
+        type: string
+      - description: Offset
+        in: query
+        name: offset
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.OrderResponse'
+            type: array
+        "500":
+          description: Something went wrong
+      summary: Get Orders
+      tags:
+      - order
+swagger: "2.0"

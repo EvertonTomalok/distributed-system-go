@@ -14,6 +14,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// API Create Order godoc
+// @Summary Create Order
+// @Description Create order
+// @Tags order
+// @Router /orders [post]
+// @Param Order body dto.OrderRequest true "Order to create"
+// @Produce json
+// @Success 201 "{'order_id': 'someid'}"
+// @Failure 400 "{'error': 'error description'}"
+// @Failure 404 "Something went wrong. Try again."
 func PostOrder(c *gin.Context) {
 	orderRequest := dto.OrderRequest{}
 
@@ -25,7 +35,7 @@ func PostOrder(c *gin.Context) {
 			switch err {
 			case errors.InvalidMethod:
 			case errors.InvalidOrder:
-				c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			default:
 				c.AbortWithError(http.StatusNotFound, err)
 			}
@@ -34,12 +44,24 @@ func PostOrder(c *gin.Context) {
 
 		triggerValidation(order)
 
-		c.JSON(http.StatusOK, gin.H{"order_id": order.ID})
+		c.JSON(http.StatusCreated, gin.H{"order_id": order.ID})
 		return
 	}
 	c.String(http.StatusNotFound, "Something went wrong. Try again.")
 }
 
+// API Create Order godoc
+// @Summary Get Orders
+// @Description Get orders from User
+// @Tags order
+// @Router /orders/{userId} [get]
+// @Param userId path string false "The user id to search"
+// @Param offset query string false "Offset"
+// @Param limit query string false "Limit"
+// @Accept json
+// @Produce json
+// @Success 200 {object} []dto.OrderResponse
+// @Failure 500 "Something went wrong"
 func GetOrdersByUserId(c *gin.Context) {
 	userId := c.Param("userId")
 

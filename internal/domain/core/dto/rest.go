@@ -11,7 +11,7 @@ type OrderResponse struct {
 	Value       decimal.Decimal `json:"value"`
 	UserId      string          `json:"user_id"`
 	Installment int64           `json:"installment"`
-	Status      sql.NullBool    `json:"status"`
+	Status      sql.NullBool    `json:"status" swaggertype:"boolean"`
 	Method      string          `json:"method"`
 }
 

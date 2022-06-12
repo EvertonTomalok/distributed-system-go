@@ -18,3 +18,6 @@ server-down:
 
 server-logs:
 	docker-compose logs -f web validate-balance-worker validate-user-status-worker
+
+swag:
+	swag init

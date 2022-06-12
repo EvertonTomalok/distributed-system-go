@@ -62,7 +62,7 @@ services:
       - PORT=5000
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
-    command: go run . server
+    command: swag init && go run . server
     ports:
       - "0.0.0.0:5000:5000"
     volumes:
