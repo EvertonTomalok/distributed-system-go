@@ -16,6 +16,7 @@ require (
 require (
 	github.com/Shopify/sarama v1.32.0 // indirect
 	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2 // indirect
+	github.com/cenkalti/backoff/v3 v3.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/eapache/go-resiliency v1.2.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect

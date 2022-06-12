@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
+	"github.com/ThreeDotsLabs/watermill/message/router/plugin"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 
@@ -53,6 +55,19 @@ func NewPublisher(kafkaHost string, kafkaPort string) *kafka.Publisher {
 		log.Panicf("Error creating publisher Kafka: %+v", err)
 	}
 	return publisher
+}
+
+func NewRouter() *message.Router {
+	router, err := message.NewRouter(message.RouterConfig{}, logger)
+	if err != nil {
+		panic(err)
+	}
+
+	router.AddPlugin(plugin.SignalsHandler)
+	router.AddMiddleware(
+		middleware.Recoverer,
+	)
+	return router
 }
 
 func PublishOrderMessageToTopic(topic string, order entities.Order) error {
