@@ -12,12 +12,14 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
+	mongoDBAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/mongodb"
 )
 
 func StartOrchestrator(ctx context.Context, config app.Config) {
 	router := kafkaAdapter.NewRouter()
 	subscriber := kafkaAdapter.NewSubscriber("orchestrator", config.Kafka.Host, config.Kafka.Port)
 	kafkaAdapter.Publisher = kafkaAdapter.NewPublisher(config.Kafka.Host, config.Kafka.Port)
+	mongoDBAdapter.MongoDBClient = mongoDBAdapter.Init(ctx, config.Mongodb.Host)
 
 	router.AddNoPublisherHandler(
 		"orchestrator",

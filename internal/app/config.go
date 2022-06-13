@@ -22,6 +22,9 @@ type Config struct {
 		Host string
 		Port string
 	}
+	Mongodb struct {
+		Host string
+	}
 }
 
 func Configure() Config {
@@ -32,6 +35,7 @@ func Configure() Config {
 	viper.SetDefault("Postgres.Host", "postgres://postgres:secret@db:5432/distributed-system?sslmode=disable")
 	viper.SetDefault("Kafka.Host", "kafka")
 	viper.SetDefault("Kafka.Port", "29092")
+	viper.SetDefault("Mongodb.Host", "mongodb://root:secret@mongodb:27017/?maxPoolSize=20&w=majority")
 
 	viper.AutomaticEnv()
 
