@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS orders
     value DECIMAL(10,2),
     method_id INT,
     user_id VARCHAR(64),
-    status BOOLEAN,
+    status VARCHAR(15),
     created_at timestamp,
     updated_at timestamp,
     FOREIGN KEY(method_id) 

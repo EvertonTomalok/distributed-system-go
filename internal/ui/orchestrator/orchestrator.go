@@ -26,6 +26,7 @@ func StartOrchestrator(ctx context.Context, config app.Config) {
 		processMessage,
 	)
 	done := utils.MakeDoneSignal()
+
 	go func() {
 		log.Println("Worker Started!")
 		if err := router.Run(ctx); err != nil {

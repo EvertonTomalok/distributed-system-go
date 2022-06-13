@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"database/sql"
-
 	"github.com/shopspring/decimal"
 )
 
@@ -11,7 +9,7 @@ type OrderResponse struct {
 	Value       decimal.Decimal `json:"value"`
 	UserId      string          `json:"user_id"`
 	Installment int64           `json:"installment"`
-	Status      sql.NullBool    `json:"status" swaggertype:"boolean"`
+	Status      string          `json:"status" swaggertype:"string"`
 	Method      string          `json:"method"`
 }
 

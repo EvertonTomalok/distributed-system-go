@@ -12,7 +12,6 @@ var runOrchestrator = &cobra.Command{
 	Short: "Run orchestrator",
 	Run: func(cmd *cobra.Command, args []string) {
 		config := application.Configure()
-
 		orchestrator.StartOrchestrator(cmd.Context(), config)
 	},
 }

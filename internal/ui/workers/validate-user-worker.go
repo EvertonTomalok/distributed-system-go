@@ -35,5 +35,7 @@ func StartValidateUserStatus(ctx context.Context, config app.Config) {
 
 func validateUserStatusOrder(msg *message.Message) error {
 	log.Printf("received message: %s, payload: %s", msg.UUID, string(msg.Payload))
+	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	return nil
 }

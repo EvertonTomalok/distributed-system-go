@@ -60,8 +60,8 @@ func (a *Adapter) GetMethodByNameAndInstallment(ctx context.Context, methodName 
 func (a *Adapter) PostOrder(ctx context.Context, order entities.Order) (string, error) {
 	sqlStmt := `
 		INSERT INTO 
-			orders (id, value, method_id, user_id, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+			orders (id, value, method_id, user_id, status, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id;
 	`
 
@@ -71,6 +71,7 @@ func (a *Adapter) PostOrder(ctx context.Context, order entities.Order) (string, 
 		order.Value,
 		order.MethodId,
 		order.UserId,
+		order.Status,
 		order.CreatedAt,
 		order.UpdatedAt,
 	)

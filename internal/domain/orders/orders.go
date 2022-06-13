@@ -33,6 +33,7 @@ func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (entities.Ord
 		MethodId:  method.ID,
 		Method:    method,
 		UserId:    orderRequest.UserId,
+		Status:    entities.PROCESSING,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}

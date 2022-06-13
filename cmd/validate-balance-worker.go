@@ -12,7 +12,6 @@ var runWorkerBalanceWorker = &cobra.Command{
 	Short: "Run worker",
 	Run: func(cmd *cobra.Command, args []string) {
 		config := application.Configure()
-
 		workers.StartValidateBalance(cmd.Context(), config)
 	},
 }

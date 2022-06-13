@@ -80,7 +80,7 @@ func ParseOrderMessage(msg *message.Message) (dto.Order, error) {
 	return dto.Order{Metadata: metadata, Order: orderMessage}, nil
 }
 
-func BrokerInternalMessage(msg *message.Message) (dto.BrokerInternalMessage, dto.Metadata, error) {
+func ParseBrokerInternalMessage(msg *message.Message) (dto.BrokerInternalMessage, dto.Metadata, error) {
 	metadata := dto.Metadata{
 		EventId:     msg.Metadata.Get("event_id"),
 		AggregateId: msg.Metadata.Get("aggregate_id"),
