@@ -14,13 +14,19 @@ import (
 
 func StartValidateBalance(ctx context.Context, config app.Config) {
 	router := kafkaAdapter.NewRouter()
-	subscriber := kafkaAdapter.NewSubscriber("validate-balance-consumer", config.Kafka.Host, config.Kafka.Port)
+	subscriber := kafkaAdapter.NewSubscriber("balance-consumer", config.Kafka.Host, config.Kafka.Port)
 
 	router.AddNoPublisherHandler(
 		"validate-balance-orders",
 		broker.UserBalanceValidatorTopic,
 		subscriber,
 		validateBalanceOrder,
+	)
+	router.AddNoPublisherHandler(
+		"compensate-balance-orders",
+		broker.UserBalanceCompensationTopic,
+		subscriber,
+		rowBackBalanceOrder,
 	)
 	done := utils.MakeDoneSignal()
 	go func() {
@@ -35,5 +41,14 @@ func StartValidateBalance(ctx context.Context, config app.Config) {
 
 func validateBalanceOrder(msg *message.Message) error {
 	log.Printf("received message: %s, payload: %s", msg.UUID, string(msg.Payload))
+	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
+	return nil
+}
+
+func rowBackBalanceOrder(msg *message.Message) error {
+	log.Printf("received message: %s, payload: %s", msg.UUID, string(msg.Payload))
+	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	return nil
 }

@@ -12,7 +12,6 @@ var runWorkerUserStatusWorker = &cobra.Command{
 	Short: "Run Worker",
 	Run: func(cmd *cobra.Command, args []string) {
 		config := application.Configure()
-
 		workers.StartValidateUserStatus(cmd.Context(), config)
 	},
 }

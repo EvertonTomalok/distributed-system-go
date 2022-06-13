@@ -1,10 +1,15 @@
 package entities
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/shopspring/decimal"
+)
+
+const (
+	PROCESSING string = "PROCESSING"
+	APPROVED          = "APPROVED"
+	CANCELED          = "CANCELED"
 )
 
 type Order struct {
@@ -13,7 +18,7 @@ type Order struct {
 	MethodId  int64
 	Method    Method
 	UserId    string
-	Status    sql.NullBool
+	Status    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -62,7 +62,7 @@ services:
       - PORT=5000
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
-    command: swag init && go build . && ./distributed-system-go server
+    command: go run . server
     ports:
       - "0.0.0.0:5000:5000"
     volumes:
@@ -93,6 +93,19 @@ services:
       -  .:/go/src/app
     working_dir: /go/src/app
     command: go run . validate-user-status-worker
+  orchestrator:
+    platform: linux/x86_64
+    container_name: orchestrator
+    image: golang:1.18
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=29092
+    volumes:
+      -  .:/go/src/app
+    working_dir: /go/src/app
+    command: go run . orchestrator
 volumes:
   .pgdata:
     driver: local

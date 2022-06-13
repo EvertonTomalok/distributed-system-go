@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 	"strconv"
-	"sync"
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
@@ -99,15 +98,5 @@ func GetOrdersByUserId(c *gin.Context) {
 }
 
 func triggerValidation(order entities.Order) {
-	var wg sync.WaitGroup
-	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
-		wg.Add(1)
-
-		go func(t string, o entities.Order) {
-			defer wg.Done()
-			kafkaAdapter.PublishOrderMessageToTopic(t, o)
-		}(topic, order)
-	}
-
-	wg.Wait()
+	kafkaAdapter.PublishOrderMessageToTopic(broker.OrchestatratorTopic, order, dto.StartEvent)
 }

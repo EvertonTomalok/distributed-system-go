@@ -8,16 +8,22 @@ setup-logs:
 	docker-compose logs -f db zookeeper kafka kafkaui
 
 server:
-	docker-compose up --remove-orphans -d web validate-balance-worker validate-user-status-worker
+	docker-compose up --remove-orphans -d validate-balance-worker validate-user-status-worker orchestrator web
+
+server-build:
+	docker-compose up --build --remove-orphans -d validate-balance-worker validate-user-status-worker orchestrator web
 
 server-restart:
-	docker-compose restart web validate-balance-worker validate-user-status-worker
+	docker-compose restart validate-balance-worker validate-user-status-worker orchestrator web
 
 server-down:
-	docker-compose stop web validate-balance-worker validate-user-status-worker
+	docker-compose stop web validate-balance-worker validate-user-status-worker orchestrator
 
 server-logs:
-	docker-compose logs -f web validate-balance-worker validate-user-status-worker
+	docker-compose logs -f validate-balance-worker validate-user-status-worker orchestrator web
 
 swag:
 	swag init
+
+web-build:
+	go build .
