@@ -27,11 +27,12 @@ type Metadata struct {
 	EventId     string
 	AggregateId string
 	Timestamp   string
+	MessageType string
 }
 
 type Order struct {
 	Metadata
-	Message OrderMessage
+	Order entities.Order
 }
 
 type OrderMessageBuilder struct {
@@ -43,7 +44,7 @@ func UUID() string {
 	return ulid.MustNew(ulid.Timestamp(time.Now().UTC()), ulid.Monotonic(rand.New(rand.NewSource(time.Now().UTC().UnixNano())), 0)).String()
 }
 
-func NewOrderMessage(event string, order entities.Order) *OrderMessageBuilder {
+func NewOrderMessage(event string, order entities.Order, messageType string) *OrderMessageBuilder {
 	json, err := json.Marshal(order)
 	if err != nil {
 		return &OrderMessageBuilder{err: err}
@@ -53,6 +54,7 @@ func NewOrderMessage(event string, order entities.Order) *OrderMessageBuilder {
 	message.Metadata.Set("aggregate_id", order.ID)
 	message.Metadata.Set("event_id", UUID())
 	message.Metadata.Set("timestamp", fmt.Sprintf("%d", time.Now().UnixNano()))
+	message.Metadata.Set("message_type", messageType)
 
 	return &OrderMessageBuilder{message: message}
 }
@@ -73,12 +75,13 @@ func ParseOrderMessage(msg *message.Message) (Order, error) {
 		EventId:     msg.Metadata.Get("event_id"),
 		AggregateId: msg.Metadata.Get("aggregate_id"),
 		Timestamp:   msg.Metadata.Get("timestamp"),
+		MessageType: msg.Metadata.Get("message_type"),
 	}
-	orderMessage := OrderMessage{}
+	orderMessage := entities.Order{}
 	err := json.Unmarshal(msg.Payload, &orderMessage)
 	if err != nil {
 		return Order{}, err
 	}
 
-	return Order{Metadata: metadata, Message: orderMessage}, nil
+	return Order{Metadata: metadata, Order: orderMessage}, nil
 }

@@ -70,8 +70,8 @@ func NewRouter() *message.Router {
 	return router
 }
 
-func PublishOrderMessageToTopic(topic string, order entities.Order) error {
-	msg, err := broker.NewOrderMessage(topic, order).Build()
+func PublishOrderMessageToTopic(topic string, order entities.Order, messageType string) error {
+	msg, err := broker.NewOrderMessage(topic, order, messageType).Build()
 	if err != nil {
 		return err
 	}
