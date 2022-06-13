@@ -1,14 +1,14 @@
 package dto
 
 import (
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	"github.com/shopspring/decimal"
 )
 
 const (
 	StartEvent               string = "start_event"
-	ValidateUserStatus              = "validate_user_status"
+	ProcessInternalMessage          = "process_internal_message"
 	ResultValidateUserStatus        = "result_validate_user_status"
-	ValidateBalance                 = "validate_balance"
 	ResultValidateBalance           = "result_validate_balance"
 )
 
@@ -21,4 +21,25 @@ type BrokerInternalMessage struct {
 	UserId       string          `json:"user_id"`
 	Status       bool            `json:"status"`
 	Metadata     string          `json:"metadata"`
+}
+
+type OrderMessage struct {
+	Status       string          `json:"status"`
+	OrderId      string          `json:"order_id"`
+	UserId       string          `json:"user_id"`
+	Method       string          `json:"type"`
+	Instalmments int64           `json:"installments"`
+	Value        decimal.Decimal `json:"value"`
+}
+
+type Metadata struct {
+	EventId     string
+	AggregateId string
+	Timestamp   string
+	MessageType string
+}
+
+type Order struct {
+	Metadata
+	Order entities.Order
 }

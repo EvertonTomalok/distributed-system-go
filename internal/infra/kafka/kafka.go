@@ -7,8 +7,6 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"github.com/ThreeDotsLabs/watermill/message/router/plugin"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 
 	"github.com/Shopify/sarama"
 
@@ -19,9 +17,6 @@ import (
 var (
 	logger = watermill.NewStdLogger(false, false)
 )
-
-// The publisher will be injected when some command starts (server, wokers, orchestrator, etc.), by the Method NewPublisher
-var Publisher message.Publisher
 
 func NewSubscriber(consumerGroup string, kafkaHost string, kafkaPort string) *kafka.Subscriber {
 	saramaSubscriberConfig := kafka.DefaultSaramaSubscriberConfig()
@@ -68,13 +63,4 @@ func NewRouter() *message.Router {
 		middleware.Recoverer,
 	)
 	return router
-}
-
-func PublishOrderMessageToTopic(topic string, order entities.Order, messageType string) error {
-	msg, err := broker.NewOrderMessage(topic, order, messageType).Build()
-	if err != nil {
-		return err
-	}
-
-	return Publisher.Publish(topic, msg)
 }
