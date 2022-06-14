@@ -10,7 +10,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	event "github.com/evertontomalok/distributed-system-go/internal/domain/events"
+	eventSource "github.com/evertontomalok/distributed-system-go/internal/domain/events"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
@@ -40,15 +40,18 @@ func StartOrchestrator(ctx context.Context, config app.Config) {
 
 func processMessage(msg *message.Message) error {
 	messageType := msg.Metadata.Get("message_type")
+	if messageType == "" {
+		messageType = msg.Metadata.Get("event")
+	}
 	switch messageType {
 	case dto.StartEvent:
 		triggerWorkers(msg)
 	case dto.ResultValidateBalance:
-		updateStep(msg)
+		updateStep(msg, "Balance Validated")
 	case dto.ResultValidateUserStatus:
-		updateStep(msg)
+		updateStep(msg, "Status Validated")
 	default:
-		updateStep(msg)
+		updateStep(msg, "Default")
 	}
 
 	return nil
@@ -78,7 +81,7 @@ func triggerWorkers(msg *message.Message) {
 		Steps:        steps,
 	}
 
-	err := event.CreateEventSource(context.Background(), internalMessage)
+	err := eventSource.CreateEventSource(context.Background(), internalMessage)
 
 	if err != nil {
 		log.Printf("Some error ocurred trying to save event source: %+v", err)
@@ -90,21 +93,22 @@ func triggerWorkers(msg *message.Message) {
 
 		go func(t string, i dto.BrokerInternalMessage) {
 			defer wg.Done()
-			kafkaAdapter.PublishInternalMessageToTopic(t, i)
+			kafkaAdapter.PublishInternalMessageToTopic(t, i, dto.StartEvent)
 		}(topic, internalMessage)
 	}
 	wg.Wait()
 }
 
-func updateStep(msg *message.Message) {
+func updateStep(msg *message.Message, message string) {
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	log.Printf("%+v | %+v\n\n", internalMessage, metadata)
 	step := dto.EventSteps{
 		Event:   metadata.Event,
 		Status:  true,
-		Message: metadata.MessageType,
+		Message: message,
 	}
 
-	err = event.UpdateStep(context.Background(), internalMessage.ID, step)
+	err = eventSource.UpdateStep(context.Background(), internalMessage.ID, step)
 
 	if err != nil {
 		log.Printf("Some error ocurred trying to update event source: %+v", err)

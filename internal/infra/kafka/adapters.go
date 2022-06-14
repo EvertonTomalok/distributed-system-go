@@ -19,8 +19,8 @@ func PublishOrderMessageToTopic(topic string, order entities.Order, messageType 
 	return Publisher.Publish(topic, msg)
 }
 
-func PublishInternalMessageToTopic(topic string, internalMessage dto.BrokerInternalMessage) error {
-	msg, err := broker.NewInternalMessage(internalMessage).Build()
+func PublishInternalMessageToTopic(topic string, internalMessage dto.BrokerInternalMessage, event string) error {
+	msg, err := broker.NewInternalMessage(internalMessage, event).Build()
 	if err != nil {
 		return err
 	}

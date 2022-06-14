@@ -8,6 +8,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app"
 	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
@@ -21,7 +22,7 @@ func StartValidateUserStatus(ctx context.Context, config app.Config) {
 		"validate-user-status-orders",
 		broker.UserStatusValidatorTopic,
 		subscriber,
-		validateBalanceOrder,
+		validateUserStatusOrder,
 	)
 	router.AddNoPublisherHandler(
 		"compensate-user-status-orders",
@@ -42,10 +43,11 @@ func StartValidateUserStatus(ctx context.Context, config app.Config) {
 
 func validateUserStatusOrder(msg *message.Message) error {
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	log.Printf("validate user status -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	if err != nil {
-		log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
+		log.Printf("validate user status -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
-	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestatratorTopic, internalMessage)
+	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestatratorTopic, internalMessage, dto.ResultValidateUserStatus)
 	return nil
 }
 

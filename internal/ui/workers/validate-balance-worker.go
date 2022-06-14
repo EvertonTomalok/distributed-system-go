@@ -8,6 +8,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app"
 	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
@@ -45,14 +46,15 @@ func validateBalanceOrder(msg *message.Message) error {
 	if err != nil {
 		log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
-	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestatratorTopic, internalMessage)
+	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestatratorTopic, internalMessage, dto.ResultValidateBalance)
 	return nil
 }
 
 func rowBackBalanceOrder(msg *message.Message) error {
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	log.Printf("validate balance -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	if err != nil {
-		log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
+		log.Printf("validate balance -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
 
 	return nil

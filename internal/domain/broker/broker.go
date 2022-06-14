@@ -38,7 +38,7 @@ func NewOrderMessage(event string, order entities.Order, messageType string) *Or
 	return &OrderMessageBuilder{message: message}
 }
 
-func NewInternalMessage(brokerInternalMessage dto.BrokerInternalMessage) *OrderMessageBuilder {
+func NewInternalMessage(brokerInternalMessage dto.BrokerInternalMessage, event string) *OrderMessageBuilder {
 	json, err := json.Marshal(brokerInternalMessage)
 	if err != nil {
 		return &OrderMessageBuilder{err: err}
@@ -48,7 +48,7 @@ func NewInternalMessage(brokerInternalMessage dto.BrokerInternalMessage) *OrderM
 	message.Metadata.Set("aggregate_id", brokerInternalMessage.ID)
 	message.Metadata.Set("event_id", UUID())
 	message.Metadata.Set("timestamp", fmt.Sprintf("%d", time.Now().UnixNano()))
-	message.Metadata.Set("event", dto.ProcessInternalMessage)
+	message.Metadata.Set("event", event)
 
 	return &OrderMessageBuilder{message: message}
 }
