@@ -10,7 +10,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/event"
+	event "github.com/evertontomalok/distributed-system-go/internal/domain/events"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
@@ -58,6 +58,7 @@ func triggerWorkers(msg *message.Message) {
 		ID:           message.Order.ID,
 		Value:        message.Order.Value,
 		MethodId:     message.Order.MethodId,
+		Method:       message.Order.Method.Name,
 		Installments: int64(message.Order.Method.Installment),
 		UserId:       message.Order.UserId,
 	}
