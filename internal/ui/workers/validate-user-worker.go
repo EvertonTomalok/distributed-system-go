@@ -15,6 +15,7 @@ import (
 func StartValidateUserStatus(ctx context.Context, config app.Config) {
 	router := kafkaAdapter.NewRouter()
 	subscriber := kafkaAdapter.NewSubscriber("user-status-consumer", config.Kafka.Host, config.Kafka.Port)
+	kafkaAdapter.Publisher = kafkaAdapter.NewPublisher(config.Kafka.Host, config.Kafka.Port)
 
 	router.AddNoPublisherHandler(
 		"validate-user-status-orders",
@@ -40,15 +41,18 @@ func StartValidateUserStatus(ctx context.Context, config app.Config) {
 }
 
 func validateUserStatusOrder(msg *message.Message) error {
-	log.Printf("received message: %s, payload: %s", msg.UUID, string(msg.Payload))
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
-	log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
+	if err != nil {
+		log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
+	}
+	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestatratorTopic, internalMessage)
 	return nil
 }
 
 func rowBackUserStatusOrder(msg *message.Message) error {
-	log.Printf("received message: %s, payload: %s", msg.UUID, string(msg.Payload))
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
-	log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
+	if err != nil {
+		log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
+	}
 	return nil
 }

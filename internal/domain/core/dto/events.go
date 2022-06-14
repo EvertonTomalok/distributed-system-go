@@ -12,6 +12,12 @@ const (
 	ResultValidateBalance           = "result_validate_balance"
 )
 
+type EventSteps struct {
+	Event   string `bson:"event"`
+	Message string `bson:"message"`
+	Status  bool   `bson:"status"`
+}
+
 type BrokerInternalMessage struct {
 	ID           string          `json:"id"`
 	Value        decimal.Decimal `json:"value"`
@@ -20,7 +26,7 @@ type BrokerInternalMessage struct {
 	Installments int64           `json:"installments"`
 	UserId       string          `json:"user_id"`
 	Status       bool            `json:"status"`
-	Metadata     string          `json:"metadata"`
+	Steps        []EventSteps    `json:"steps"`
 }
 
 type OrderMessage struct {
@@ -37,6 +43,7 @@ type Metadata struct {
 	AggregateId string
 	Timestamp   string
 	MessageType string
+	Event       string
 }
 
 type Order struct {

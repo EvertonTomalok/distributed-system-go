@@ -17,3 +17,12 @@ func CreateEventSource(ctx context.Context, brokerInternalMessage dto.BrokerInte
 	}
 	return nil
 }
+
+func UpdateStep(ctx context.Context, orderId string, step dto.EventSteps) error {
+	err := EventsAdapter.UpdateEventStep(ctx, orderId, step)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -20,6 +20,7 @@ type OrdersPort interface {
 
 type EventsSourcePort interface {
 	SaveEvent(ctx context.Context, internalMessage dto.BrokerInternalMessage) error
+	UpdateEventStep(ctx context.Context, orderId string, step dto.EventSteps) error
 }
 
 type DB interface {

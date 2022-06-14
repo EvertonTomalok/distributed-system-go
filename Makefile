@@ -20,7 +20,7 @@ server-down:
 	docker-compose stop web validate-balance-worker validate-user-status-worker orchestrator
 
 server-logs:
-	docker-compose logs -f validate-balance-worker validate-user-status-worker orchestrator web
+	docker-compose logs -f --tail 10 validate-balance-worker validate-user-status-worker orchestrator web
 
 swag:
 	swag init

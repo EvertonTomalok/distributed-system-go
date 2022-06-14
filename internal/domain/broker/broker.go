@@ -85,6 +85,7 @@ func ParseBrokerInternalMessage(msg *message.Message) (dto.BrokerInternalMessage
 		EventId:     msg.Metadata.Get("event_id"),
 		AggregateId: msg.Metadata.Get("aggregate_id"),
 		Timestamp:   msg.Metadata.Get("timestamp"),
+		Event:       msg.Metadata.Get("event"),
 	}
 	internalMessage := dto.BrokerInternalMessage{}
 	err := json.Unmarshal(msg.Payload, &internalMessage)

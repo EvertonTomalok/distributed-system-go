@@ -39,12 +39,16 @@ func StartOrchestrator(ctx context.Context, config app.Config) {
 }
 
 func processMessage(msg *message.Message) error {
-	payload := string(msg.Payload)
-	log.Printf("received message: %s, payload: %s, metadata: %+v", msg.UUID, payload, msg.Metadata)
 	messageType := msg.Metadata.Get("message_type")
 	switch messageType {
 	case dto.StartEvent:
 		triggerWorkers(msg)
+	case dto.ResultValidateBalance:
+		updateStep(msg)
+	case dto.ResultValidateUserStatus:
+		updateStep(msg)
+	default:
+		updateStep(msg)
 	}
 
 	return nil
@@ -54,6 +58,15 @@ func triggerWorkers(msg *message.Message) {
 	message, _ := broker.ParseOrderMessage(msg)
 	var wg sync.WaitGroup
 
+	step := dto.EventSteps{
+		Event:   dto.StartEvent,
+		Status:  true,
+		Message: "Started with success",
+	}
+
+	steps := make([]dto.EventSteps, 0)
+	steps = append(steps, step)
+
 	internalMessage := dto.BrokerInternalMessage{
 		ID:           message.Order.ID,
 		Value:        message.Order.Value,
@@ -61,6 +74,8 @@ func triggerWorkers(msg *message.Message) {
 		Method:       message.Order.Method.Name,
 		Installments: int64(message.Order.Method.Installment),
 		UserId:       message.Order.UserId,
+		Status:       true,
+		Steps:        steps,
 	}
 
 	err := event.CreateEventSource(context.Background(), internalMessage)
@@ -79,4 +94,21 @@ func triggerWorkers(msg *message.Message) {
 		}(topic, internalMessage)
 	}
 	wg.Wait()
+}
+
+func updateStep(msg *message.Message) {
+	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	step := dto.EventSteps{
+		Event:   metadata.Event,
+		Status:  true,
+		Message: metadata.MessageType,
+	}
+
+	err = event.UpdateStep(context.Background(), internalMessage.ID, step)
+
+	if err != nil {
+		log.Printf("Some error ocurred trying to update event source: %+v", err)
+		return
+	}
+
 }
