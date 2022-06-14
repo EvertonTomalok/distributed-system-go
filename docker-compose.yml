@@ -14,6 +14,17 @@ services:
      - POSTGRES_DB=distributed-system
    ports:
      - 0.0.0.0:5432:5432
+  mongodb:
+    platform: linux/x86_64
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - 0.0.0.0:27017:27017
+    volumes:
+      - ../.mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
   zookeeper:
     platform: linux/x86_64
     container_name: zookeeper
@@ -99,13 +110,17 @@ services:
     image: golang:1.18
     depends_on:
       - kafka
+      - mongodb
     environment:
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
+      - MONGODB_HOST=mongodb://root:secret@mongodb:27017/?maxPoolSize=20&w=majority
     volumes:
       -  .:/go/src/app
     working_dir: /go/src/app
     command: go run . orchestrator
 volumes:
   .pgdata:
+    driver: local
+  .mongo:
     driver: local

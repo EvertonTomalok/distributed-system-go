@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 )
 
@@ -15,6 +16,11 @@ type MethodsPort interface {
 type OrdersPort interface {
 	PostOrder(ctx context.Context, orderRequest entities.Order) (string, error)
 	GetOrdersByUserId(ctx context.Context, userId string, offset int64, limit int64) ([]entities.Order, error)
+}
+
+type EventsSourcePort interface {
+	SaveEvent(ctx context.Context, internalMessage dto.BrokerInternalMessage) error
+	UpdateEventStep(ctx context.Context, orderId string, step dto.EventSteps) error
 }
 
 type DB interface {

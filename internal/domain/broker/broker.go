@@ -33,12 +33,12 @@ func NewOrderMessage(event string, order entities.Order, messageType string) *Or
 	message.Metadata.Set("aggregate_id", order.ID)
 	message.Metadata.Set("event_id", UUID())
 	message.Metadata.Set("timestamp", fmt.Sprintf("%d", time.Now().UnixNano()))
-	message.Metadata.Set("message_type", messageType)
+	message.Metadata.Set("event", messageType)
 
 	return &OrderMessageBuilder{message: message}
 }
 
-func NewInternalMessage(brokerInternalMessage dto.BrokerInternalMessage) *OrderMessageBuilder {
+func NewInternalMessage(brokerInternalMessage dto.BrokerInternalMessage, event string) *OrderMessageBuilder {
 	json, err := json.Marshal(brokerInternalMessage)
 	if err != nil {
 		return &OrderMessageBuilder{err: err}
@@ -48,7 +48,7 @@ func NewInternalMessage(brokerInternalMessage dto.BrokerInternalMessage) *OrderM
 	message.Metadata.Set("aggregate_id", brokerInternalMessage.ID)
 	message.Metadata.Set("event_id", UUID())
 	message.Metadata.Set("timestamp", fmt.Sprintf("%d", time.Now().UnixNano()))
-	message.Metadata.Set("event", dto.ProcessInternalMessage)
+	message.Metadata.Set("event", event)
 
 	return &OrderMessageBuilder{message: message}
 }
@@ -85,6 +85,7 @@ func ParseBrokerInternalMessage(msg *message.Message) (dto.BrokerInternalMessage
 		EventId:     msg.Metadata.Get("event_id"),
 		AggregateId: msg.Metadata.Get("aggregate_id"),
 		Timestamp:   msg.Metadata.Get("timestamp"),
+		Event:       msg.Metadata.Get("event"),
 	}
 	internalMessage := dto.BrokerInternalMessage{}
 	err := json.Unmarshal(msg.Payload, &internalMessage)

@@ -10,6 +10,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	eventSource "github.com/evertontomalok/distributed-system-go/internal/domain/events"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
@@ -38,12 +39,17 @@ func StartOrchestrator(ctx context.Context, config app.Config) {
 }
 
 func processMessage(msg *message.Message) error {
-	payload := string(msg.Payload)
-	log.Printf("received message: %s, payload: %s, metadata: %+v", msg.UUID, payload, msg.Metadata)
-	messageType := msg.Metadata.Get("message_type")
-	switch messageType {
+	event := msg.Metadata.Get("event")
+
+	switch event {
 	case dto.StartEvent:
 		triggerWorkers(msg)
+	case dto.ResultValidateBalance:
+		updateStep(msg, "Balance Validated")
+	case dto.ResultValidateUserStatus:
+		updateStep(msg, "Status Validated")
+	default:
+		updateStep(msg, "Default")
 	}
 
 	return nil
@@ -53,21 +59,56 @@ func triggerWorkers(msg *message.Message) {
 	message, _ := broker.ParseOrderMessage(msg)
 	var wg sync.WaitGroup
 
+	step := dto.EventSteps{
+		Event:   dto.StartEvent,
+		Status:  true,
+		Message: "Started with success",
+	}
+
+	steps := make([]dto.EventSteps, 0)
+	steps = append(steps, step)
+
 	internalMessage := dto.BrokerInternalMessage{
 		ID:           message.Order.ID,
 		Value:        message.Order.Value,
 		MethodId:     message.Order.MethodId,
+		Method:       message.Order.Method.Name,
 		Installments: int64(message.Order.Method.Installment),
 		UserId:       message.Order.UserId,
+		Status:       true,
+		Steps:        steps,
+	}
+
+	err := eventSource.CreateEventSource(context.Background(), internalMessage)
+
+	if err != nil {
+		log.Printf("Some error ocurred trying to save event source: %+v", err)
+		return
 	}
 
 	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
 		wg.Add(1)
-
 		go func(t string, i dto.BrokerInternalMessage) {
 			defer wg.Done()
-			kafkaAdapter.PublishInternalMessageToTopic(t, i)
+			kafkaAdapter.PublishInternalMessageToTopic(t, i, dto.StartEvent)
 		}(topic, internalMessage)
 	}
 	wg.Wait()
+}
+
+func updateStep(msg *message.Message, message string) {
+	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	step := dto.EventSteps{
+		Event:   metadata.Event,
+		Status:  true,
+		Message: message,
+	}
+
+	err = eventSource.UpdateStep(context.Background(), internalMessage.ID, step)
+
+	if err != nil {
+		log.Printf("Some error ocurred trying to update event source: %+v", err)
+		return
+	}
+
 }

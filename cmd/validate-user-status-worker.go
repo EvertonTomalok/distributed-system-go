@@ -19,5 +19,6 @@ var runWorkerUserStatusWorker = &cobra.Command{
 func init() {
 	viper.BindEnv("Kafka.Port", "KAFKA_PORT")
 	viper.BindEnv("Kafka.Host", "KAFKA_HOST")
+	viper.BindEnv("Mongodb.Host", "MONGODB_HOST")
 	rootCmd.AddCommand(runWorkerUserStatusWorker)
 }
