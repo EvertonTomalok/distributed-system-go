@@ -32,7 +32,6 @@ func StartValidateBalance(ctx context.Context, config app.Config) {
 	)
 	done := utils.MakeDoneSignal()
 	go func() {
-		log.Println("Worker Started!")
 		if err := router.Run(ctx); err != nil {
 			log.Panicf("%+v\n\n", err)
 		}
@@ -46,16 +45,15 @@ func validateBalanceOrder(msg *message.Message) error {
 	if err != nil {
 		log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
+
 	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestatratorTopic, internalMessage, dto.ResultValidateBalance)
 	return nil
 }
 
 func rowBackBalanceOrder(msg *message.Message) error {
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
-	log.Printf("validate balance -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	if err != nil {
 		log.Printf("validate balance -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
-
 	return nil
 }

@@ -33,7 +33,7 @@ func NewOrderMessage(event string, order entities.Order, messageType string) *Or
 	message.Metadata.Set("aggregate_id", order.ID)
 	message.Metadata.Set("event_id", UUID())
 	message.Metadata.Set("timestamp", fmt.Sprintf("%d", time.Now().UnixNano()))
-	message.Metadata.Set("message_type", messageType)
+	message.Metadata.Set("event", messageType)
 
 	return &OrderMessageBuilder{message: message}
 }

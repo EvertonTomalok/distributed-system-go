@@ -39,11 +39,9 @@ func StartOrchestrator(ctx context.Context, config app.Config) {
 }
 
 func processMessage(msg *message.Message) error {
-	messageType := msg.Metadata.Get("message_type")
-	if messageType == "" {
-		messageType = msg.Metadata.Get("event")
-	}
-	switch messageType {
+	event := msg.Metadata.Get("event")
+
+	switch event {
 	case dto.StartEvent:
 		triggerWorkers(msg)
 	case dto.ResultValidateBalance:
@@ -90,7 +88,6 @@ func triggerWorkers(msg *message.Message) {
 
 	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
 		wg.Add(1)
-
 		go func(t string, i dto.BrokerInternalMessage) {
 			defer wg.Done()
 			kafkaAdapter.PublishInternalMessageToTopic(t, i, dto.StartEvent)
@@ -101,7 +98,6 @@ func triggerWorkers(msg *message.Message) {
 
 func updateStep(msg *message.Message, message string) {
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
-	log.Printf("%+v | %+v\n\n", internalMessage, metadata)
 	step := dto.EventSteps{
 		Event:   metadata.Event,
 		Status:  true,
