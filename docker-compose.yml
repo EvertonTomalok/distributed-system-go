@@ -110,6 +110,7 @@ services:
     image: golang:1.18
     depends_on:
       - kafka
+      - mongodb
     environment:
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
@@ -120,4 +121,6 @@ services:
     command: go run . orchestrator
 volumes:
   .pgdata:
+    driver: local
+  .mongo:
     driver: local

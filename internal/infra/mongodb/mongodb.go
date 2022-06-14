@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func Init(ctx context.Context, uri string) *mongo.Client {
+func createClient(ctx context.Context, uri string) *mongo.Client {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
@@ -26,4 +26,9 @@ func Init(ctx context.Context, uri string) *mongo.Client {
 
 	log.Println("Successfully connected to mongodb and pinged.")
 	return client
+}
+
+func Init(ctx context.Context, uri string) *mongo.Database {
+	client := createClient(ctx, uri)
+	return client.Database("event_source")
 }

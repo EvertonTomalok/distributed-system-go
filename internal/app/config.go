@@ -5,9 +5,11 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	eventSource "github.com/evertontomalok/distributed-system-go/internal/domain/event"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
+	mongoDBAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/mongodb"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/postgres"
 	"github.com/spf13/viper"
 )
@@ -57,6 +59,11 @@ func InitDB(ctx context.Context, cfg Config) {
 	methods.MethodsDBAdapter = adapter
 	orders.OrdersDBAdapter = adapter
 	log.Infof("Database connection is ready at [%s***:%s]", cfg.Postgres.Host[0:2], cfg.Port)
+}
+
+func InitMongoDb(ctx context.Context, cfg Config) {
+	mongoDBAdapter.MongoDatabase = mongoDBAdapter.Init(ctx, cfg.Mongodb.Host)
+	eventSource.EventsAdapter = mongoDBAdapter.New()
 }
 
 func InitKafka(ctx context.Context, cfg Config) {

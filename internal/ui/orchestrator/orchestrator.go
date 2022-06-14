@@ -10,16 +10,15 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/event"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
-	mongoDBAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/mongodb"
 )
 
 func StartOrchestrator(ctx context.Context, config app.Config) {
 	router := kafkaAdapter.NewRouter()
 	subscriber := kafkaAdapter.NewSubscriber("orchestrator", config.Kafka.Host, config.Kafka.Port)
 	kafkaAdapter.Publisher = kafkaAdapter.NewPublisher(config.Kafka.Host, config.Kafka.Port)
-	mongoDBAdapter.MongoDBClient = mongoDBAdapter.Init(ctx, config.Mongodb.Host)
 
 	router.AddNoPublisherHandler(
 		"orchestrator",
@@ -61,6 +60,13 @@ func triggerWorkers(msg *message.Message) {
 		MethodId:     message.Order.MethodId,
 		Installments: int64(message.Order.Method.Installment),
 		UserId:       message.Order.UserId,
+	}
+
+	err := event.CreateEventSource(context.Background(), internalMessage)
+
+	if err != nil {
+		log.Printf("Some error ocurred trying to save event source: %+v", err)
+		return
 	}
 
 	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
