@@ -18,13 +18,14 @@ A curious fact is that I love to search for the most advanced technologies being
 
 # Roadmap
 
-- [x] ~~API~~
-- [x] ~~EDA Structure~~
-- [ ] Orchestrator [WIP]
-- [ ] Event Log Source
+- [x] API
+- [x] EDA Structure
+- [x] Orchestrator
+- [x] Event Log Source
 - [ ] Feature Toggles
 - [ ] API's Fallbacks
 - [ ] Unit Tests
 - [ ] Integration Tests
 - [ ] E2E Tests
 - [ ] Example of CI/CD in github actions
+- [ ] Write Documentation

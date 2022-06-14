@@ -79,6 +79,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/orders/{orderId}": {
+            "get": {
+                "description": "Get order using its id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "order"
+                ],
+                "summary": "Get Order by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The order id to search",
+                        "name": "orderId",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Order not found"
+                    },
+                    "500": {
+                        "description": "Something went wrong"
+                    }
+                }
+            }
+        },
         "/orders/{userId}": {
             "get": {
                 "description": "Get orders from User",
@@ -180,7 +217,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "boolean"
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"

@@ -33,6 +33,11 @@ var routes = []Route{
 		handlers.GetOrdersByUserId,
 	},
 	{
+		"/order/:orderId",
+		http.MethodGet,
+		handlers.GetOrderById,
+	},
+	{
 		"/methods",
 		http.MethodGet,
 		handlers.GetAllMethods,

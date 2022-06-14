@@ -124,3 +124,25 @@ func (a *Adapter) GetOrdersByUserId(ctx context.Context, userId string, offset i
 	}
 	return orders, nil
 }
+
+func (a *Adapter) GetOrderById(ctx context.Context, orderId string) (entities.Order, error) {
+	sqlStmt := `
+		SELECT 
+			orders.id, orders.value, orders.method_id, orders.user_id, orders.status, orders.created_at, orders.updated_at,  methods.name, methods.installment 
+		FROM orders
+		INNER JOIN methods ON orders.method_id = methods.id
+		WHERE orders.id = $1;
+	`
+
+	var order entities.Order
+
+	err := a.Db.QueryRowContext(ctx, sqlStmt, orderId).Scan(
+		&order.ID, &order.Value, &order.MethodId, &order.UserId, &order.Status, &order.CreatedAt, &order.UpdatedAt, &order.Method.Name, &order.Method.Installment,
+	)
+
+	if err != nil {
+		log.Info("Any method was found.")
+		return order, err
+	}
+	return order, nil
+}

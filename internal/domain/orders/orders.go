@@ -46,3 +46,13 @@ func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (entities.Ord
 
 	return order, nil
 }
+
+func GetOrderById(ctx context.Context, orderId string) (entities.Order, error) {
+	order, err := OrdersDBAdapter.GetOrderById(ctx, orderId)
+
+	if err != nil {
+		return entities.Order{}, errors.InvalidOrder
+	}
+
+	return order, nil
+}

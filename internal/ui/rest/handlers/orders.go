@@ -97,6 +97,38 @@ func GetOrdersByUserId(c *gin.Context) {
 	c.JSON(http.StatusOK, ordersResponse)
 }
 
+// API Create Order godoc
+// @Summary Get Order by id
+// @Description Get order using its id
+// @Tags order
+// @Router /orders/{orderId} [get]
+// @Param orderId path string false "The order id to search"
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.OrderResponse
+// @Failure 404 "Order not found"
+// @Failure 500 "Something went wrong"
+func GetOrderById(c *gin.Context) {
+	orderId := c.Param("orderId")
+
+	order, err := ordersRepository.OrdersDBAdapter.GetOrderById(c.Request.Context(), orderId)
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	orderResponse := dto.OrderResponse{
+		Id:          order.ID,
+		UserId:      order.UserId,
+		Status:      order.Status,
+		Value:       order.Value,
+		Method:      order.Method.Name,
+		Installment: order.MethodId,
+	}
+
+	c.JSON(http.StatusOK, orderResponse)
+}
+
 func triggerValidation(order entities.Order) {
 	kafkaAdapter.PublishOrderMessageToTopic(broker.OrchestatratorTopic, order, dto.StartEvent)
 }
