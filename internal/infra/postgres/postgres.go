@@ -11,7 +11,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var db *sql.DB
+var (
+	Db      *sql.DB
+	Started bool = false
+)
 
 func Init(ctx context.Context, host string) *sql.DB {
 	db, err := sql.Open("nrpostgres", host)
@@ -39,4 +42,12 @@ func Init(ctx context.Context, host string) *sql.DB {
 		}
 	}
 	return db
+}
+
+func Check(database *sql.DB) error {
+	if err := database.Ping(); err != nil {
+		return err
+	}
+	Started = true
+	return nil
 }
