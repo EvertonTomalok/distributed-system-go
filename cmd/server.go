@@ -13,6 +13,7 @@ var runCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := cmd.Context()
 		config := application.Configure()
+		application.ConfigureFlags()
 		application.InitDB(ctx, config)
 		application.InitKafka(ctx, config)
 		rest.RunServer(ctx, config)

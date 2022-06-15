@@ -15,6 +15,8 @@ I've already used many architectures in my professional life, and I noticed that
 
 A curious fact is that I love to search for the most advanced technologies being used in the big techs and apply them in my personal/professional codes. I read an article which the writer had the same perception I had, joining the cons of the most used architectures in the industry (Clean, Hexagonal, DDD, Onion, etc.). If you like to follow new good tendencies, [here](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together/) is the awesome article was written by Heberto Graça.
 
+# Documentation Endpoint
+- [GET] http://0.0.0.0:5000/swagger/index.html 
 
 # Roadmap
 
@@ -22,7 +24,7 @@ A curious fact is that I love to search for the most advanced technologies being
 - [x] EDA Structure
 - [x] Orchestrator
 - [x] Event Log Source
-- [ ] Feature Toggles
+- [x] Feature Toggles
 - [ ] API's Fallbacks
 - [ ] Unit Tests
 - [ ] Integration Tests

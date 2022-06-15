@@ -75,6 +75,9 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Something went wrong. Try again."
+                    },
+                    "503": {
+                        "description": "Feature Flag is disabled."
                     }
                 }
             }

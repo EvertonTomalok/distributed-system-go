@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
@@ -11,6 +12,7 @@ import (
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 // API Create Order godoc
@@ -23,7 +25,12 @@ import (
 // @Success 201 "{'order_id': 'someid'}"
 // @Failure 400 "{'error': 'error description'}"
 // @Failure 404 "Something went wrong. Try again."
+// @Failure 503 "Feature Flag is disabled."
 func PostOrder(c *gin.Context) {
+	if status := utils.CheckFeatureFlag(dto.PostOrderFlag, c); status == false {
+		log.Info("Post Order Flag is disabled.")
+		return
+	}
 	orderRequest := dto.OrderRequest{}
 
 	err := c.ShouldBind(&orderRequest)
@@ -62,6 +69,11 @@ func PostOrder(c *gin.Context) {
 // @Success 200 {object} []dto.OrderResponse
 // @Failure 500 "Something went wrong"
 func GetOrdersByUserId(c *gin.Context) {
+	if status := utils.CheckFeatureFlag(dto.GetOrdersFromUserFlag, c); status == false {
+		log.Info("Get Orders from User flag is disabled.")
+		return
+	}
+
 	userId := c.Param("userId")
 
 	offset, err := strconv.ParseInt(c.Query("offset"), 0, 64)
@@ -109,6 +121,10 @@ func GetOrdersByUserId(c *gin.Context) {
 // @Failure 404 "Order not found"
 // @Failure 500 "Something went wrong"
 func GetOrderById(c *gin.Context) {
+	if status := utils.CheckFeatureFlag(dto.GetOrderByIdFlag, c); status == false {
+		log.Info("Get Order by id flag is disabled.")
+		return
+	}
 	orderId := c.Param("orderId")
 
 	order, err := ordersRepository.OrdersDBAdapter.GetOrderById(c.Request.Context(), orderId)

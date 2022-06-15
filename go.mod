@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/Shopify/sarama v1.32.0
 	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.2.2
-	github.com/docker/docker v20.10.13+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/newrelic/go-agent/v3/integrations/nrpq v1.1.1

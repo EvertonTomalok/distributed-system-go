@@ -5,6 +5,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/evertontomalok/distributed-system-go/internal/app/shared"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
@@ -62,4 +64,16 @@ func InitDB(ctx context.Context, cfg Config) {
 func InitKafka(ctx context.Context, cfg Config) {
 	kafka.Publisher = kafka.NewPublisher(cfg.Kafka.Host, cfg.Kafka.Port)
 	log.Infof("Kafka is ready at [%s***:%s]", cfg.Kafka.Host[0:2], cfg.Kafka.Port)
+}
+
+func ConfigureFlags() {
+	// Todo implement some logic simulating getting values from a cache service with real time watch changes,
+	//	like redis os etcd
+	shared.Flags = map[string]bool{
+		dto.PostOrderFlag:         true,
+		dto.GetOrderByIdFlag:      true,
+		dto.GetOrdersFromUserFlag: true,
+	}
+
+	log.Info("Feature Flags configured.")
 }

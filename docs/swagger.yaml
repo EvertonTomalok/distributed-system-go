@@ -80,6 +80,8 @@ paths:
           description: '{''error'': ''error description''}'
         "404":
           description: Something went wrong. Try again.
+        "503":
+          description: Feature Flag is disabled.
       summary: Create Order
       tags:
       - order
