@@ -2,7 +2,6 @@ package orchestrator
 
 import (
 	"context"
-	"log"
 	"sync"
 
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -11,31 +10,35 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	eventSource "github.com/evertontomalok/distributed-system-go/internal/domain/events"
+	log "github.com/sirupsen/logrus"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
 
 func StartOrchestrator(ctx context.Context, config app.Config) {
-	router := kafkaAdapter.NewRouter()
 	subscriber := kafkaAdapter.NewSubscriber("orchestrator", config.Kafka.Host, config.Kafka.Port)
 	kafkaAdapter.Publisher = kafkaAdapter.NewPublisher(config.Kafka.Host, config.Kafka.Port)
 
-	router.AddNoPublisherHandler(
-		"orchestrator",
-		broker.OrchestatratorTopic,
-		subscriber,
-		processMessage,
-	)
 	done := utils.MakeDoneSignal()
 
-	go func() {
-		log.Println("Worker Started!")
-		if err := router.Run(ctx); err != nil {
-			log.Panicf("%+v\n\n", err)
-		}
-	}()
+	messages, err := subscriber.Subscribe(context.Background(), broker.OrchestatratorTopic)
+	if err != nil {
+		log.Panicf("Trying to start orchestrator, some error ocurred: %+v: ", err)
+	}
+	go process(messages)
+
 	<-done
-	router.Close()
+	subscriber.Close()
+}
+
+func process(messages <-chan *message.Message) {
+	for msg := range messages {
+		if err := processMessage(msg); err != nil {
+			log.Errorf("Something went wrong trying to process message %+v | err: %+v", msg, err)
+			// TODO send this message to a dead letter
+		}
+		msg.Ack()
+	}
 }
 
 func processMessage(msg *message.Message) error {
