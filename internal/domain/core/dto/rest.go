@@ -25,3 +25,10 @@ type MethodResponse struct {
 	Method       string `json:"method"`
 	Installments int64  `json:"installments"`
 }
+
+type OrdersResponse struct {
+	Offset int64           `json:"offset"`
+	Limit  int64           `json:"limit"`
+	Total  int             `json:"total"`
+	Orders []OrderResponse `json:"orders"`
+}

@@ -39,6 +39,19 @@ definitions:
       value:
         type: number
     type: object
+  dto.OrdersResponse:
+    properties:
+      count:
+        type: integer
+      limit:
+        type: integer
+      offset:
+        type: integer
+      orders:
+        items:
+          $ref: '#/definitions/dto.OrderResponse'
+        type: array
+    type: object
 info:
   contact: {}
 paths:
@@ -133,9 +146,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/dto.OrderResponse'
-            type: array
+            $ref: '#/definitions/dto.OrdersResponse'
         "500":
           description: Something went wrong
       summary: Get Orders

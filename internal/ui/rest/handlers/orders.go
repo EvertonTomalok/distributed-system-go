@@ -66,7 +66,7 @@ func PostOrder(c *gin.Context) {
 // @Param limit query string false "Limit"
 // @Accept json
 // @Produce json
-// @Success 200 {object} []dto.OrderResponse
+// @Success 200 {object} dto.OrdersResponse
 // @Failure 500 "Something went wrong"
 func GetOrdersByUserId(c *gin.Context) {
 	if status := utils.CheckFeatureFlag(dto.GetOrdersFromUserFlag, c); status == false {
@@ -91,11 +91,11 @@ func GetOrdersByUserId(c *gin.Context) {
 
 	orders, err := ordersRepository.OrdersDBAdapter.GetOrdersByUserId(c.Request.Context(), userId, offset, limit)
 
-	var ordersResponse []dto.OrderResponse
+	var ordersArray []dto.OrderResponse = make([]dto.OrderResponse, 0)
 
 	for _, order := range orders {
-		ordersResponse = append(
-			ordersResponse,
+		ordersArray = append(
+			ordersArray,
 			dto.OrderResponse{
 				Id:          order.ID,
 				UserId:      order.UserId,
@@ -105,6 +105,12 @@ func GetOrdersByUserId(c *gin.Context) {
 				Method:      order.Method.Name,
 			},
 		)
+	}
+	ordersResponse := dto.OrdersResponse{
+		Offset: offset,
+		Limit:  limit,
+		Total:  len(ordersArray),
+		Orders: ordersArray,
 	}
 	c.JSON(http.StatusOK, ordersResponse)
 }

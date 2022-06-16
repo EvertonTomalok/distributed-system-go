@@ -25,5 +25,5 @@ server-logs:
 swag:
 	swag init
 
-web-build:
+build:
 	go build .
