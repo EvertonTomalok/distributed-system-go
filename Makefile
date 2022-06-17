@@ -1,11 +1,14 @@
 setup:
-	docker-compose up -d db mongodb zookeeper kafka kafkaui
+	docker-compose up -d db mongodb zookeeper kafka kafkaui user-api
+
+setup-down:
+	docker-compose stop db mongodb zookeeper kafka kafkaui user-api
 
 down:
 	docker-compose down
 
 setup-logs:
-	docker-compose logs -f db mongodb zookeeper kafka kafkaui
+	docker-compose logs -f db mongodb zookeeper kafka kafkaui user-api
 
 server:
 	docker-compose up --remove-orphans -d validate-balance-worker validate-user-status-worker orchestrator web
