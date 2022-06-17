@@ -91,3 +91,34 @@ func (a *Adapter) UpdateEventStep(ctx context.Context, orderId string, step dto.
 
 	return nil
 }
+
+func (a *Adapter) UpdateStatus(ctx context.Context, orderId string, status bool) error {
+	col, err := a.getCol()
+
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	match := bson.M{"order_id": orderId}
+	change := bson.M{"status": status}
+
+	_, err = col.UpdateOne(ctx, match, change)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *Adapter) GetDocumentByOrderId(ctx context.Context, orderId string) (dto.Document, error) {
+	col, err := a.getCol()
+	doc := dto.Document{}
+	if err != nil {
+		log.Fatal(err)
+		return doc, err
+	}
+	if err = col.FindOne(ctx, bson.M{"order_id": orderId}).Decode(&doc); err != nil {
+		return doc, err
+	}
+	return doc, nil
+}

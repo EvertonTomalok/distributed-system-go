@@ -146,3 +146,23 @@ func (a *Adapter) GetOrderById(ctx context.Context, orderId string) (entities.Or
 	}
 	return order, nil
 }
+
+func (a *Adapter) UpdateStatusByOrderId(ctx context.Context, orderId string, status string) error {
+	sqlStmt := `
+		UPDATE orders
+		SET status = $2
+		WHERE id = $1;
+	`
+	_, err := a.Db.Exec(
+		sqlStmt,
+		orderId,
+		status,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}

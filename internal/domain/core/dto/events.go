@@ -3,6 +3,7 @@ package dto
 import (
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	"github.com/shopspring/decimal"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
@@ -22,14 +23,25 @@ type EventSteps struct {
 }
 
 type BrokerInternalMessage struct {
-	ID           string          `json:"id"`
-	Value        decimal.Decimal `json:"value"`
-	MethodId     int64           `json:"method_id"`
-	Method       string          `json:"method"`
-	Installments int64           `json:"installments"`
-	UserId       string          `json:"user_id"`
-	Status       bool            `json:"status"`
-	Steps        []EventSteps    `json:"steps"`
+	ID           string          `json:"id" bson:"id"`
+	Value        decimal.Decimal `json:"value" bson:"value"`
+	MethodId     int64           `json:"method_id" bson:"method_id"`
+	Method       string          `json:"method" bson:"method"`
+	Installments int64           `json:"installments" bson:"installments"`
+	UserId       string          `json:"user_id" bson:"user_id"`
+	Status       bool            `json:"status" bson:"status"`
+	Steps        []EventSteps    `json:"steps" bson:"steps"`
+}
+
+type Document struct {
+	ID           string               `json:"id" bson:"id"`
+	Value        primitive.Decimal128 `json:"value" bson:"value"`
+	MethodId     int64                `json:"method_id" bson:"method_id"`
+	Method       string               `json:"method" bson:"method"`
+	Installments int64                `json:"installments" bson:"installments"`
+	UserId       string               `json:"user_id" bson:"user_id"`
+	Status       bool                 `json:"status" bson:"status"`
+	Steps        []EventSteps         `json:"steps" bson:"steps"`
 }
 
 type OrderMessage struct {

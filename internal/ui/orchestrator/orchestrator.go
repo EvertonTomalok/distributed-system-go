@@ -10,7 +10,9 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	eventSource "github.com/evertontomalok/distributed-system-go/internal/domain/events"
+	"github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	log "github.com/sirupsen/logrus"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
@@ -57,9 +59,10 @@ func processMessage(msg *message.Message) error {
 	case dto.CompensationBalanceStatus:
 		updateStep(msg, "Balance is invalid.")
 	default:
-		updateStep(msg, "Default")
+		log.Infof("Message event received, and I don't know what I must do -> %+v", msg)
 	}
 
+	orderIsCompleted(context.Background(), msg)
 	return nil
 }
 
@@ -137,4 +140,37 @@ func compensationTrigger(internalMessage dto.BrokerInternalMessage, metadata *dt
 	case dto.ResultValidateUserStatus:
 		kafkaAdapter.PublishInternalMessageToTopic(broker.UserStatusCompensationTopic, internalMessage, dto.CompensationValidateUserStatus)
 	}
+}
+
+func orderIsCompleted(ctx context.Context, msg *message.Message) error {
+	internalMessage, _, _ := broker.ParseBrokerInternalMessage(msg)
+	if internalMessage.ID == "" {
+		return nil
+	}
+	doc, e := eventSource.EventsAdapter.GetDocumentByOrderId(msg.Context(), internalMessage.ID)
+
+	if e != nil {
+		return e
+	}
+
+	if len(doc.Steps) < 3 {
+		return nil
+	}
+
+	if allStepsOk(doc.Steps) == true {
+		err := orders.OrdersDBAdapter.UpdateStatusByOrderId(ctx, internalMessage.ID, entities.APPROVED)
+		return err
+	}
+	err := orders.OrdersDBAdapter.UpdateStatusByOrderId(ctx, internalMessage.ID, entities.CANCELED)
+	return err
+}
+
+func allStepsOk(steps []dto.EventSteps) bool {
+	// Todo implement a better logic to these steps validation
+	for _, step := range steps {
+		if step.Status != true {
+			return false
+		}
+	}
+	return true
 }

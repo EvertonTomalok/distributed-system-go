@@ -17,11 +17,13 @@ type OrdersPort interface {
 	PostOrder(ctx context.Context, orderRequest entities.Order) (string, error)
 	GetOrdersByUserId(ctx context.Context, userId string, offset int64, limit int64) ([]entities.Order, error)
 	GetOrderById(ctx context.Context, orderId string) (entities.Order, error)
+	UpdateStatusByOrderId(ctx context.Context, orderId string, status string) error
 }
 
 type EventsSourcePort interface {
 	SaveEvent(ctx context.Context, internalMessage dto.BrokerInternalMessage) error
 	UpdateEventStep(ctx context.Context, orderId string, step dto.EventSteps) error
+	GetDocumentByOrderId(ctx context.Context, orderId string) (dto.Document, error)
 }
 
 type DB interface {

@@ -15,6 +15,7 @@ var runOrchestrator = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config := application.Configure()
 		event.EventsAdapter = mongoDBAdapter.New(config)
+		application.InitDB(cmd.Context(), config)
 		orchestrator.StartOrchestrator(cmd.Context(), config)
 	},
 }
