@@ -152,5 +152,5 @@ func GetOrderById(c *gin.Context) {
 }
 
 func triggerValidation(order entities.Order) {
-	kafkaAdapter.PublishOrderMessageToTopic(broker.OrchestatratorTopic, order, dto.StartEvent)
+	kafkaAdapter.PublishOrderMessageToTopic(broker.OrchestratorTopic, order, dto.StartEvent)
 }

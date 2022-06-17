@@ -48,6 +48,15 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://kafka:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+  user-api:
+    platform: linux/x86_64
+    build: ./userapi/.
+    container_name: user-api
+    command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000:8000", "userapi.server:app"]
+    ports:
+    - "0.0.0.0:8000:8000"
+    volumes:
+      - .:/usr/src/app
   kafkaui:
     platform: linux/x86_64
     container_name: kafkaui
@@ -97,9 +106,11 @@ services:
     image: golang:1.18
     depends_on:
       - kafka
+      - user-api
     environment:
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
+      - USERAPI_BASEURL=http://user-api:8000/api/
     volumes:
       -  .:/go/src/app
     working_dir: /go/src/app
@@ -119,15 +130,6 @@ services:
       -  .:/go/src/app
     working_dir: /go/src/app
     command: go run . orchestrator
-  user-api:
-    platform: linux/x86_64
-    build: ./userapi/.
-    container_name: user-api
-    command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000:8000", "userapi.server:app"]
-    ports:
-    - "0.0.0.0:8000:8000"
-    volumes:
-      - .:/usr/src/app
 volumes:
   .pgdata:
     driver: local

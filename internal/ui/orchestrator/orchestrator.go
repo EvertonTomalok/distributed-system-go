@@ -2,6 +2,7 @@ package orchestrator
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -21,7 +22,7 @@ func StartOrchestrator(ctx context.Context, config app.Config) {
 
 	done := utils.MakeDoneSignal()
 
-	messages, err := subscriber.Subscribe(context.Background(), broker.OrchestatratorTopic)
+	messages, err := subscriber.Subscribe(context.Background(), broker.OrchestratorTopic)
 	if err != nil {
 		log.Panicf("Trying to start orchestrator, some error ocurred: %+v: ", err)
 	}
@@ -51,6 +52,10 @@ func processMessage(msg *message.Message) error {
 		updateStep(msg, "Balance Validated")
 	case dto.ResultValidateUserStatus:
 		updateStep(msg, "Status Validated")
+	case dto.CompensationValidateUserStatus:
+		updateStep(msg, "User is invalid.")
+	case dto.CompensationBalanceStatus:
+		updateStep(msg, "Balance is invalid.")
 	default:
 		updateStep(msg, "Default")
 	}
@@ -103,7 +108,7 @@ func updateStep(msg *message.Message, message string) {
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
 	step := dto.EventSteps{
 		Event:   metadata.Event,
-		Status:  true,
+		Status:  internalMessage.Status,
 		Message: message,
 	}
 
@@ -114,4 +119,22 @@ func updateStep(msg *message.Message, message string) {
 		return
 	}
 
+	if internalMessage.Status == false && (metadata.Event == dto.ResultValidateBalance || metadata.Event == dto.ResultValidateUserStatus) {
+		step := dto.EventSteps{
+			Event:   dto.CompensationStarted,
+			Status:  true,
+			Message: fmt.Sprintf("Compensation started to %s", metadata.Event),
+		}
+		err = eventSource.UpdateStep(context.Background(), internalMessage.ID, step)
+		compensationTrigger(internalMessage, &metadata)
+	}
+}
+
+func compensationTrigger(internalMessage dto.BrokerInternalMessage, metadata *dto.Metadata) {
+	switch metadata.Event {
+	case dto.ResultValidateBalance:
+		kafkaAdapter.PublishInternalMessageToTopic(broker.UserBalanceCompensationTopic, internalMessage, dto.CompensationBalanceStatus)
+	case dto.ResultValidateUserStatus:
+		kafkaAdapter.PublishInternalMessageToTopic(broker.UserStatusCompensationTopic, internalMessage, dto.CompensationValidateUserStatus)
+	}
 }

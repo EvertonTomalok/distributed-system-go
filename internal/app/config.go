@@ -27,6 +27,9 @@ type Config struct {
 	Mongodb struct {
 		Host string
 	}
+	UserApi struct {
+		BaseUrl string
+	}
 }
 
 func Configure() Config {
@@ -38,6 +41,7 @@ func Configure() Config {
 	viper.SetDefault("Kafka.Host", "kafka")
 	viper.SetDefault("Kafka.Port", "29092")
 	viper.SetDefault("Mongodb.Host", "mongodb://root:secret@mongodb:27017/?maxPoolSize=20&w=majority")
+	viper.SetDefault("UserApi.BaseUrl", "http://0.0.0.0:8000/api/")
 
 	viper.AutomaticEnv()
 

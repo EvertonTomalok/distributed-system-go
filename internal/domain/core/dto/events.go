@@ -6,10 +6,13 @@ import (
 )
 
 const (
-	StartEvent               string = "start_event"
-	ProcessInternalMessage          = "process_internal_message"
-	ResultValidateUserStatus        = "result_validate_user_status"
-	ResultValidateBalance           = "result_validate_balance"
+	StartEvent                     string = "start_event"
+	ProcessInternalMessage                = "process_internal_message"
+	CompensationStarted                   = "compensation_started"
+	CompensationBalanceStatus             = "compensation_balance_status"
+	ResultValidateUserStatus              = "result_validate_user_status"
+	CompensationValidateUserStatus        = "compensation_validate_user_status"
+	ResultValidateBalance                 = "result_validate_balance"
 )
 
 type EventSteps struct {
