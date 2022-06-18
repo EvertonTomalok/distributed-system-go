@@ -144,6 +144,7 @@ func GetOrderById(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
+		return
 	}
 
 	orderResponse := dto.OrderResponse{

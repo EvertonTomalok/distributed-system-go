@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -150,13 +151,14 @@ func (a *Adapter) GetOrderById(ctx context.Context, orderId string) (entities.Or
 func (a *Adapter) UpdateStatusByOrderId(ctx context.Context, orderId string, status string) error {
 	sqlStmt := `
 		UPDATE orders
-		SET status = $2
+		SET status = $2, updated_at = $3
 		WHERE id = $1;
 	`
 	_, err := a.Db.Exec(
 		sqlStmt,
 		orderId,
 		status,
+		time.Now(),
 	)
 
 	if err != nil {
