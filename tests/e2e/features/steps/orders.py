@@ -30,7 +30,7 @@ def step_impl(context):
         )
         
         
-@then(u'check status is PROCESSING')
-def step_impl(context):
+@then('check status is "{status}"')
+def step_impl(context, status):
     for response in context.responses:
-        assert response["status"] == "PROCESSING"
+        assert response["status"] == status

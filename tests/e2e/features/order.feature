@@ -7,4 +7,4 @@ Scenario: Insert Valid ordem
         | 1000.00 | debit_card  |      1       | user    |
 
     When create order
-    Then check status is PROCESSING
+    Then check status is "PROCESSING"
