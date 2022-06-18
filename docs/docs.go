@@ -68,7 +68,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "{'order_id': 'someid'}"
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderResponse"
+                        }
                     },
                     "400": {
                         "description": "{'error': 'error description'}"
@@ -230,9 +233,6 @@ const docTemplate = `{
         "dto.OrdersResponse": {
             "type": "object",
             "properties": {
-                "count": {
-                    "type": "integer"
-                },
                 "limit": {
                     "type": "integer"
                 },
@@ -244,6 +244,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.OrderResponse"
                     }
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         }

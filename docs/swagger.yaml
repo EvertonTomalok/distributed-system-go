@@ -41,8 +41,6 @@ definitions:
     type: object
   dto.OrdersResponse:
     properties:
-      count:
-        type: integer
       limit:
         type: integer
       offset:
@@ -51,6 +49,8 @@ definitions:
         items:
           $ref: '#/definitions/dto.OrderResponse'
         type: array
+      total:
+        type: integer
     type: object
 info:
   contact: {}
@@ -88,7 +88,9 @@ paths:
       - application/json
       responses:
         "201":
-          description: '{''order_id'': ''someid''}'
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.OrderResponse'
         "400":
           description: '{''error'': ''error description''}'
         "404":

@@ -8,7 +8,7 @@ down:
 	docker-compose down
 
 setup-logs:
-	docker-compose logs -f db mongodb zookeeper kafka kafkaui user-api
+	docker-compose logs -f --tail 10 db mongodb zookeeper kafka kafkaui user-api
 
 server:
 	docker-compose up --remove-orphans -d validate-balance-worker validate-user-status-worker orchestrator web

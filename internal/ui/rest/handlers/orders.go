@@ -22,7 +22,7 @@ import (
 // @Router /orders [post]
 // @Param Order body dto.OrderRequest true "Order to create"
 // @Produce json
-// @Success 201 "{'order_id': 'someid'}"
+// @Success 201 {object} dto.OrderResponse
 // @Failure 400 "{'error': 'error description'}"
 // @Failure 404 "Something went wrong. Try again."
 // @Failure 503 "Feature Flag is disabled."
@@ -49,8 +49,15 @@ func PostOrder(c *gin.Context) {
 		}
 
 		triggerValidation(order)
-
-		c.JSON(http.StatusCreated, gin.H{"order_id": order.ID})
+		orderResponse := dto.OrderResponse{
+			Id:          order.ID,
+			Status:      order.Status,
+			Value:       order.Value,
+			UserId:      orderRequest.UserId,
+			Installment: orderRequest.Installment,
+			Method:      orderRequest.Method,
+		}
+		c.JSON(http.StatusCreated, orderResponse)
 		return
 	}
 	c.String(http.StatusNotFound, "Something went wrong. Try again.")

@@ -1,0 +1,161 @@
+{
+	"info": {
+		"_postman_id": "095d1d95-3fd8-4157-b603-8528db05ed56",
+		"name": "Go-Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2984971"
+	},
+	"item": [
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "Place Order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "value",
+									"value": "1000.00",
+									"type": "text"
+								},
+								{
+									"key": "user_id",
+									"value": "uuuu-aaaa-bbbb-invalid",
+									"type": "text"
+								},
+								{
+									"key": "installment",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "method",
+									"value": "credit_card",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "0.0.0.0:5000/api/orders",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders from user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "0.0.0.0:5000/api/orders/uuuu-aaaa-bbbb?offset=0&limit=100",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"orders",
+								"uuuu-aaaa-bbbb"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get order",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "0.0.0.0:5000/api/order/cd0124e6-1d74-4b63-993d-0e56bae28d2a",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"order",
+								"cd0124e6-1d74-4b63-993d-0e56bae28d2a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get status user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:8000/api/user/123-abc",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"user",
+								"123-abc"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
