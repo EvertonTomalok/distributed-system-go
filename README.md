@@ -26,7 +26,24 @@ If you like to follow new good tendencies, [here](https://herbertograca.com/2017
 
 Bellow we have a simple architecture diagram from this project.
 
+
+## Rest Diagram
+
+![Rest Diagram](./docs/images/rest.jpg)
+
+
+<hr>
+
+## Event Driven Diagram
+![Eda Diagram](./docs/images/eda.jpg)
+
+<hr>
+
+## Full Diagram
+
 ![Diagram](./docs/images/arch.jpg)
+
+<hr>
 
 # Setup
 

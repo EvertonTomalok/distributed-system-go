@@ -50,9 +50,9 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
   user-api:
     platform: linux/x86_64
-    build: ./userapi/.
+    build: ./pkg/userapi/.
     container_name: user-api
-    command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000:8000", "userapi.server:app"]
+    command: ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000:8000", "pkg.userapi.server:app"]
     ports:
     - "0.0.0.0:8000:8000"
     volumes:
