@@ -13,6 +13,7 @@ An example of a system based in events, using an orchestrator to handle with ord
 - [Create Order](#create-order-example)
 - [Get Order](#get-order-status-from-order-using-curl)
 - [Get Orders From User](#get-orders-from-user)
+- [Running tests][#running-tests]
 - [Roadmap](#roadmap)
 
 
@@ -180,6 +181,19 @@ curl --location --request GET '0.0.0.0:5000/api/orders/<user_id>?offset=0&limit=
 }
 ```
 
+# Running Tests
+
+## Test End to End
+
+There are some BDD tests included in this project, written in python using the lib [Behave](https://behave.readthedocs.io/en/stable/index.html).
+
+To run test e2e, just type this in a root in a terminal (setup and engine must be up):
+
+- `make test-e2e`
+
+Ps.: To know more about BDD, please read this topic -> https://en.wikipedia.org/wiki/Behavior-driven_development
+
+
 # Roadmap
 
 - [x] API
@@ -190,6 +204,6 @@ curl --location --request GET '0.0.0.0:5000/api/orders/<user_id>?offset=0&limit=
 - [ ] API's Fallbacks
 - [ ] Unit Tests
 - [ ] Integration Tests
-- [ ] E2E Tests
+- [x] E2E Tests
 - [ ] Example of CI/CD in github actions
 - [x] Write Documentation

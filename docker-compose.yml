@@ -130,6 +130,17 @@ services:
       -  .:/go/src/app
     working_dir: /go/src/app
     command: go run . orchestrator
+
+  # TESTS
+  test-e2e:
+    platform: linux/x86_64
+    container_name: test-e2e
+    build: ./tests/e2e/.
+    environment:
+    - BASE_URL=http://web:5000/api
+    depends_on:
+    - web
+    command: ["behave"]
 volumes:
   .pgdata:
     driver: local
