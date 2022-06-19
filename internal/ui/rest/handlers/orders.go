@@ -8,7 +8,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
+	domainErrors "github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	"github.com/gin-gonic/gin"
@@ -38,9 +38,9 @@ func PostOrder(c *gin.Context) {
 	if err == nil {
 		order, err := ordersRepository.SaveOrder(c.Request.Context(), orderRequest)
 		if err != nil {
+			log.Infoln("err", err)
 			switch err {
-			case errors.InvalidMethod:
-			case errors.InvalidOrder:
+			case domainErrors.InvalidMethod, domainErrors.InvalidOrder:
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			default:
 				c.AbortWithError(http.StatusNotFound, err)

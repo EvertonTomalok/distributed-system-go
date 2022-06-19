@@ -30,3 +30,6 @@ swag:
 
 build:
 	go build .
+
+test-e2e:
+	docker-compose up test-e2e
