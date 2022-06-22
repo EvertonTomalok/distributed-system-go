@@ -10,7 +10,7 @@ import (
 func CheckFeatureFlag(flagName string, c *gin.Context) bool {
 	flagStatus := shared.Flags[flagName]
 
-	if flagStatus == false {
+	if !flagStatus {
 		c.AbortWithStatus(http.StatusServiceUnavailable)
 		return false
 	}
