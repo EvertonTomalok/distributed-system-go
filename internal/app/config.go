@@ -57,11 +57,12 @@ func Configure() Config {
 
 func InitDB(ctx context.Context, cfg Config) {
 	database := postgres.Init(ctx, cfg.Postgres.Host)
-	adapter := postgres.New(database)
+
 	if err := postgres.Check(database); err != nil {
 		log.Fatal("Database not initilialized.")
 	}
 
+	adapter := postgres.New(database)
 	// Dependency Injections
 	methods.MethodsDBAdapter = adapter
 	orders.OrdersDBAdapter = adapter
