@@ -56,3 +56,8 @@ func GetOrderById(ctx context.Context, orderId string) (entities.Order, error) {
 
 	return order, nil
 }
+
+func DeleteAllOrdersFromUserTest(ctx context.Context) error {
+	err := OrdersDBAdapter.DeleteAllOrdersFromUserTest(ctx)
+	return err
+}

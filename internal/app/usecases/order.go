@@ -140,3 +140,11 @@ func GetOrderById(c *gin.Context) *gin.Context {
 	c.JSON(http.StatusOK, orderResponse)
 	return c
 }
+
+func DeleteOrdersFromUserTest(c *gin.Context) *gin.Context {
+	err := ordersRepository.DeleteAllOrdersFromUserTest(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusNoContent, gin.H{"deleted": "ok"})
+	}
+	return c
+}

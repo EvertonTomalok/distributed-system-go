@@ -43,6 +43,11 @@ var routes = []Route{
 		handlers.GetOrderById,
 	},
 	{
+		"/orders/user/test",
+		http.MethodDelete,
+		handlers.DeleteOrdersFromUserTest,
+	},
+	{
 		"/methods",
 		http.MethodGet,
 		handlers.GetAllMethods,

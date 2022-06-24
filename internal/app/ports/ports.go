@@ -18,6 +18,7 @@ type OrdersPort interface {
 	GetOrdersByUserId(ctx context.Context, userId string, offset int64, limit int64) ([]entities.Order, error)
 	GetOrderById(ctx context.Context, orderId string) (entities.Order, error)
 	UpdateStatusByOrderId(ctx context.Context, orderId string, status string) error
+	DeleteAllOrdersFromUserTest(ctx context.Context) error
 }
 
 type EventsSourcePort interface {

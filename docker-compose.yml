@@ -141,6 +141,8 @@ services:
     depends_on:
     - web
     command: ["behave"]
+    volumes:
+      -  .:/usr/src/app/tests/e2e
 volumes:
   .pgdata:
     driver: local

@@ -177,3 +177,24 @@ func (a *Adapter) UpdateStatusByOrderId(ctx context.Context, orderId string, sta
 
 	return nil
 }
+
+func (a *Adapter) DeleteAllOrdersFromUserTest(ctx context.Context) error {
+	sqlStmt := `
+		DELETE FROM orders
+		WHERE user_id = $1 OR user_id = $2;
+	`
+	result, err := a.Db.Exec(
+		sqlStmt,
+		"user_test",
+		"user_test_invalid",
+	)
+
+	log.Printf("%+v", result)
+
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}

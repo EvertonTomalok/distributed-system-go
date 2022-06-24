@@ -17,3 +17,7 @@ import (
 func GetAllMethods(c *gin.Context) {
 	usecases.GetAllMethods(c)
 }
+
+func DeleteOrdersFromUserTest(c *gin.Context) {
+	usecases.DeleteOrdersFromUserTest(c)
+}
