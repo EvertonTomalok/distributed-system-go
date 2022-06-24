@@ -2,6 +2,7 @@ package orchestrator
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -9,7 +10,8 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/app"
 	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
-	eventSource "github.com/evertontomalok/distributed-system-go/internal/core/events"
+	eventSourceRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/events"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/services/aws"
 	"github.com/evertontomalok/distributed-system-go/pkg/broker"
 	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 	log "github.com/sirupsen/logrus"
@@ -59,7 +61,9 @@ func processMessage(msg *message.Message) error {
 	case dto.CompensationBalanceStatus:
 		updateStep(msg, "Balance is invalid.")
 	default:
-		log.Infof("Message event received, and I don't know what I must do -> %+v", msg)
+		msgReceived := fmt.Sprintf("Message event received, and it can't be processed -> %+v", msg)
+		err := errors.New(msgReceived)
+		aws.SendErrorToCloudWatch(context.TODO(), err)
 	}
 
 	if err := orderIsCompleted(context.Background(), msg); err != nil {
@@ -92,10 +96,10 @@ func triggerWorkers(msg *message.Message) {
 		Steps:        steps,
 	}
 
-	err := eventSource.CreateEventSource(context.Background(), internalMessage)
+	err := eventSourceRepository.CreateEventSource(msg.Context(), internalMessage)
 
 	if err != nil {
-		log.Printf("Some error ocurred trying to save event source: %+v", err)
+		aws.SendErrorToCloudWatch(msg.Context(), err)
 		return
 	}
 
@@ -103,7 +107,10 @@ func triggerWorkers(msg *message.Message) {
 		wg.Add(1)
 		go func(t string, i dto.BrokerInternalMessage) {
 			defer wg.Done()
-			kafkaAdapter.PublishInternalMessageToTopic(t, i, dto.StartEvent)
+			err = kafkaAdapter.PublishInternalMessageToTopic(t, i, dto.StartEvent)
+			if err != nil {
+				aws.SendErrorToCloudWatch(msg.Context(), err)
+			}
 		}(topic, internalMessage)
 	}
 	wg.Wait()
@@ -111,26 +118,34 @@ func triggerWorkers(msg *message.Message) {
 
 func updateStep(msg *message.Message, message string) {
 	internalMessage, metadata, err := broker.ParseBrokerInternalMessage(msg)
+	if err != nil {
+		aws.SendErrorToCloudWatch(msg.Context(), err)
+		return
+	}
 	step := dto.EventSteps{
 		Event:   metadata.Event,
 		Status:  internalMessage.Status,
 		Message: message,
 	}
 
-	err = eventSource.UpdateStep(context.Background(), internalMessage.ID, step)
+	err = eventSourceRepository.UpdateStep(context.Background(), internalMessage.ID, step)
 
 	if err != nil {
-		log.Printf("Some error ocurred trying to update event source: %+v", err)
+		aws.SendErrorToCloudWatch(msg.Context(), err)
 		return
 	}
 
-	if internalMessage.Status == false && (metadata.Event == dto.ResultValidateBalance || metadata.Event == dto.ResultValidateUserStatus) {
+	if !internalMessage.Status && (metadata.Event == dto.ResultValidateBalance || metadata.Event == dto.ResultValidateUserStatus) {
 		step := dto.EventSteps{
 			Event:   dto.CompensationStarted,
 			Status:  true,
 			Message: fmt.Sprintf("Compensation started to %s", metadata.Event),
 		}
-		err = eventSource.UpdateStep(context.Background(), internalMessage.ID, step)
+		err = eventSourceRepository.UpdateStep(context.Background(), internalMessage.ID, step)
+		if err != nil {
+			aws.SendErrorToCloudWatch(msg.Context(), err)
+			return
+		}
 		compensationTrigger(internalMessage, &metadata)
 	}
 }
@@ -138,9 +153,16 @@ func updateStep(msg *message.Message, message string) {
 func compensationTrigger(internalMessage dto.BrokerInternalMessage, metadata *dto.Metadata) {
 	switch metadata.Event {
 	case dto.ResultValidateBalance:
-		kafkaAdapter.PublishInternalMessageToTopic(broker.UserBalanceCompensationTopic, internalMessage, dto.CompensationBalanceStatus)
+		err := kafkaAdapter.PublishInternalMessageToTopic(broker.UserBalanceCompensationTopic, internalMessage, dto.CompensationBalanceStatus)
+		if err != nil {
+			aws.SendErrorToCloudWatch(context.TODO(), err)
+		}
 	case dto.ResultValidateUserStatus:
-		kafkaAdapter.PublishInternalMessageToTopic(broker.UserStatusCompensationTopic, internalMessage, dto.CompensationValidateUserStatus)
+		err := kafkaAdapter.PublishInternalMessageToTopic(broker.UserStatusCompensationTopic, internalMessage, dto.CompensationValidateUserStatus)
+		if err != nil {
+			aws.SendErrorToCloudWatch(context.TODO(), err)
+			return
+		}
 	}
 }
 
@@ -149,7 +171,7 @@ func orderIsCompleted(ctx context.Context, msg *message.Message) error {
 	if internalMessage.ID == "" {
 		return nil
 	}
-	doc, e := eventSource.EventsAdapter.GetDocumentByOrderId(msg.Context(), internalMessage.ID)
+	doc, e := eventSourceRepository.EventsAdapter.GetDocumentByOrderId(msg.Context(), internalMessage.ID)
 
 	if e != nil {
 		return e
@@ -159,7 +181,7 @@ func orderIsCompleted(ctx context.Context, msg *message.Message) error {
 		return nil
 	}
 
-	if allStepsOk(doc.Steps) == true {
+	if allStepsOk(doc.Steps) {
 		err := ordersRepository.OrdersDBAdapter.UpdateStatusByOrderId(ctx, internalMessage.ID, entities.APPROVED)
 		return err
 	}
@@ -170,7 +192,7 @@ func orderIsCompleted(ctx context.Context, msg *message.Message) error {
 func allStepsOk(steps []dto.EventSteps) bool {
 	// Todo implement a better logic to these steps validation
 	for _, step := range steps {
-		if step.Status != true {
+		if step.Status {
 			return false
 		}
 	}

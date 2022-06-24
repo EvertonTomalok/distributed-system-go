@@ -2,8 +2,8 @@ package cmd
 
 import (
 	application "github.com/evertontomalok/distributed-system-go/internal/app"
-	event "github.com/evertontomalok/distributed-system-go/internal/core/events"
 	mongoDBAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/database/mongodb"
+	eventsRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/events"
 	"github.com/evertontomalok/distributed-system-go/internal/ui/orchestrator"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -14,7 +14,7 @@ var runOrchestrator = &cobra.Command{
 	Short: "Run orchestrator",
 	Run: func(cmd *cobra.Command, args []string) {
 		config := application.Configure()
-		event.EventsAdapter = mongoDBAdapter.New(config)
+		eventsRepository.EventsAdapter = mongoDBAdapter.New(config)
 		application.InitDB(cmd.Context(), config)
 		orchestrator.StartOrchestrator(cmd.Context(), config)
 	},
