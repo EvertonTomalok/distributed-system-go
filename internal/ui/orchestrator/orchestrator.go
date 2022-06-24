@@ -7,12 +7,12 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/evertontomalok/distributed-system-go/internal/app"
-	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	eventSource "github.com/evertontomalok/distributed-system-go/internal/domain/events"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/orders"
+	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 	log "github.com/sirupsen/logrus"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"

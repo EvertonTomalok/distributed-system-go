@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	domainErrors "github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
+	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )

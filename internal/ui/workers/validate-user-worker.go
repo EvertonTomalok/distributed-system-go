@@ -7,9 +7,9 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/evertontomalok/distributed-system-go/internal/app"
-	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	userapi "github.com/evertontomalok/distributed-system-go/internal/infra/services/user-api"
@@ -49,11 +49,15 @@ func validateUserStatusOrder(msg *message.Message) error {
 	}
 
 	userStatusResponse := userapi.UserAdapter.GetUserStatus(internalMessage.UserId)
-	if userStatusResponse.IsValid == true {
-		kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.ResultValidateUserStatus)
+	if userStatusResponse.IsValid {
+		if err := kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.ResultValidateUserStatus); err != nil {
+			return err
+		}
 	} else {
 		internalMessage.Status = false
-		kafkaAdapter.PublishInternalMessageToTopic(broker.UserStatusCompensationTopic, internalMessage, dto.ResultValidateUserStatus)
+		if err := kafkaAdapter.PublishInternalMessageToTopic(broker.UserStatusCompensationTopic, internalMessage, dto.ResultValidateUserStatus); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -65,6 +69,8 @@ func rowBackUserStatusOrder(msg *message.Message) error {
 		log.Printf("%+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
 
-	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.CompensationValidateUserStatus)
+	if err := kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.CompensationValidateUserStatus); err != nil {
+		return err
+	}
 	return nil
 }

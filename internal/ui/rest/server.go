@@ -9,7 +9,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/docs"
 
 	config "github.com/evertontomalok/distributed-system-go/internal/app"
-	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
+	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"

@@ -7,9 +7,9 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/evertontomalok/distributed-system-go/internal/app"
-	"github.com/evertontomalok/distributed-system-go/internal/app/utils"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
@@ -48,10 +48,14 @@ func validateBalanceOrder(msg *message.Message) error {
 	}
 	v, _ := internalMessage.Value.Float64()
 	if v <= 10000.00 {
-		kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.ResultValidateBalance)
+		if err := kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.ResultValidateBalance); err != nil {
+			return err
+		}
 	} else {
 		internalMessage.Status = false
-		kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.CompensationBalanceStatus)
+		if err := kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.CompensationBalanceStatus); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -62,6 +66,8 @@ func rowBackBalanceOrder(msg *message.Message) error {
 		log.Printf("validate balance -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
 
-	kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.CompensationBalanceStatus)
+	if err := kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.CompensationBalanceStatus); err != nil {
+		return err
+	}
 	return nil
 }
