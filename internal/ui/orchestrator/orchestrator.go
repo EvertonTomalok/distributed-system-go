@@ -39,7 +39,7 @@ func StartOrchestrator(ctx context.Context, config app.Config) {
 func process(messages <-chan *message.Message) {
 	for msg := range messages {
 		if err := processMessage(msg); err != nil {
-			log.Errorf("Something went wrong trying to process message %+v | err: %+v", msg, err)
+			log.Errorf("Something went wrong trying to process message %+v | err: %+v\n\n\n\n", msg, err)
 			// TODO send this message to a dead letter
 		}
 		msg.Ack()
@@ -48,7 +48,6 @@ func process(messages <-chan *message.Message) {
 
 func processMessage(msg *message.Message) error {
 	event := msg.Metadata.Get("event")
-
 	switch event {
 	case dto.StartEvent:
 		triggerWorkers(msg)
@@ -192,7 +191,7 @@ func orderIsCompleted(ctx context.Context, msg *message.Message) error {
 func allStepsOk(steps []dto.EventSteps) bool {
 	// Todo implement a better logic to these steps validation
 	for _, step := range steps {
-		if step.Status {
+		if !step.Status {
 			return false
 		}
 	}

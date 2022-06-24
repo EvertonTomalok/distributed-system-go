@@ -19,7 +19,7 @@ Scenario: Invalid method order
     When create orders
     Then check response status_code 400
 
-
+@insert-approved-orders
 Scenario: Insert APPROVED orders
     Given A set of Orders
         | value   | method      | installments | user_id   |
