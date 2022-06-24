@@ -14,7 +14,7 @@ func Health(c *gin.Context) {
 }
 
 func Readiness(c *gin.Context) {
-	if postgres.Started == false {
+	if !postgres.Started {
 		c.AbortWithStatus(http.StatusServiceUnavailable)
 		return
 	}

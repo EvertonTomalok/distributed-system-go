@@ -4,12 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
 	domainErrors "github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
-	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/services/aws"
+	"github.com/evertontomalok/distributed-system-go/pkg/helpers"
 	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -27,8 +26,9 @@ import (
 // @Failure 404 "Something went wrong. Try again."
 // @Failure 503 "Feature Flag is disabled."
 func PostOrder(c *gin.Context) {
-	if status := utils.CheckFeatureFlag(dto.PostOrderFlag, c); status == false {
+	if status := utils.CheckFeatureFlag(dto.PostOrderFlag, c); !status {
 		log.Info("Post Order Flag is disabled.")
+		c.AbortWithStatus(http.StatusBadGateway)
 		return
 	}
 	orderRequest := dto.OrderRequest{}
@@ -43,12 +43,19 @@ func PostOrder(c *gin.Context) {
 			case domainErrors.InvalidMethod, domainErrors.InvalidOrder:
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			default:
-				c.AbortWithError(http.StatusNotFound, err)
+				if err := c.AbortWithError(http.StatusNotFound, err); err != nil {
+					log.Fatalf("Something went wrong: %+v", err)
+				}
 			}
 			return
 		}
 
-		triggerValidation(order)
+		if err := helpers.TriggerValidation(order); err != nil {
+			aws.SendErrorToCloudWatch(c, err)
+			c.String(http.StatusInternalServerError, "Something went wrong. Try again.")
+			return
+		}
+
 		orderResponse := dto.OrderResponse{
 			Id:          order.ID,
 			Status:      order.Status,
@@ -60,7 +67,7 @@ func PostOrder(c *gin.Context) {
 		c.JSON(http.StatusCreated, orderResponse)
 		return
 	}
-	c.String(http.StatusNotFound, "Something went wrong. Try again.")
+	c.String(http.StatusUnprocessableEntity, "Something went wrong. Try again.")
 }
 
 // API Create Order godoc
@@ -76,8 +83,9 @@ func PostOrder(c *gin.Context) {
 // @Success 200 {object} dto.OrdersResponse
 // @Failure 500 "Something went wrong"
 func GetOrdersByUserId(c *gin.Context) {
-	if status := utils.CheckFeatureFlag(dto.GetOrdersFromUserFlag, c); status == false {
+	if status := utils.CheckFeatureFlag(dto.GetOrdersFromUserFlag, c); !status {
 		log.Info("Get Orders from User flag is disabled.")
+		c.AbortWithStatus(http.StatusBadGateway)
 		return
 	}
 
@@ -97,6 +105,11 @@ func GetOrdersByUserId(c *gin.Context) {
 	}
 
 	orders, err := ordersRepository.OrdersDBAdapter.GetOrdersByUserId(c.Request.Context(), userId, offset, limit)
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
 
 	var ordersArray []dto.OrderResponse = make([]dto.OrderResponse, 0)
 
@@ -134,8 +147,9 @@ func GetOrdersByUserId(c *gin.Context) {
 // @Failure 404 "Order not found"
 // @Failure 500 "Something went wrong"
 func GetOrderById(c *gin.Context) {
-	if status := utils.CheckFeatureFlag(dto.GetOrderByIdFlag, c); status == false {
+	if status := utils.CheckFeatureFlag(dto.GetOrderByIdFlag, c); !status {
 		log.Info("Get Order by id flag is disabled.")
+		c.AbortWithStatus(http.StatusBadGateway)
 		return
 	}
 	orderId := c.Param("orderId")
@@ -157,8 +171,4 @@ func GetOrderById(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, orderResponse)
-}
-
-func triggerValidation(order entities.Order) {
-	kafkaAdapter.PublishOrderMessageToTopic(broker.OrchestratorTopic, order, dto.StartEvent)
 }

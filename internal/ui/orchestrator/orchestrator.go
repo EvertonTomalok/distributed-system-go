@@ -62,7 +62,9 @@ func processMessage(msg *message.Message) error {
 		log.Infof("Message event received, and I don't know what I must do -> %+v", msg)
 	}
 
-	orderIsCompleted(context.Background(), msg)
+	if err := orderIsCompleted(context.Background(), msg); err != nil {
+		return err
+	}
 	return nil
 }
 

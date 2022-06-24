@@ -5,6 +5,7 @@ import (
 
 	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
 	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/services/aws"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,7 +21,9 @@ import (
 func GetAllMethods(c *gin.Context) {
 	allMethods, err := methods.GetMethods(c.Request.Context())
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		if err := c.AbortWithError(http.StatusNotFound, err); err != nil {
+			aws.SendErrorToCloudWatch(c, err)
+		}
 		return
 	}
 
