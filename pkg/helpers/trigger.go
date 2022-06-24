@@ -1,9 +1,9 @@
 package helpers
 
 import (
-	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/broker"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 )
 

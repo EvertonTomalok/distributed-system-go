@@ -1,19 +1,19 @@
 package dto
 
 import (
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
 	"github.com/shopspring/decimal"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
 	StartEvent                     string = "start_event"
-	ProcessInternalMessage                = "process_internal_message"
-	CompensationStarted                   = "compensation_started"
-	CompensationBalanceStatus             = "compensation_balance_status"
-	ResultValidateUserStatus              = "result_validate_user_status"
-	CompensationValidateUserStatus        = "compensation_validate_user_status"
-	ResultValidateBalance                 = "result_validate_balance"
+	ProcessInternalMessage         string = "process_internal_message"
+	CompensationStarted            string = "compensation_started"
+	CompensationBalanceStatus      string = "compensation_balance_status"
+	ResultValidateUserStatus       string = "result_validate_user_status"
+	CompensationValidateUserStatus string = "compensation_validate_user_status"
+	ResultValidateBalance          string = "result_validate_balance"
 )
 
 type EventSteps struct {

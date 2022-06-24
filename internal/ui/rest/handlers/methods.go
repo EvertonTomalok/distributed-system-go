@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/core/methods"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/services/aws"
 	"github.com/gin-gonic/gin"
 )

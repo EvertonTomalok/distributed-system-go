@@ -3,9 +3,9 @@ package methods
 import (
 	"context"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/ports"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/errors"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/ports"
 )
 
 // The adapter will be injected when the command starts the program. See the injection in

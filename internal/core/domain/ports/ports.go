@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 )
 
 type MethodsPort interface {

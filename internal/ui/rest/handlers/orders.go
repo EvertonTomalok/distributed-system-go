@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	domainErrors "github.com/evertontomalok/distributed-system-go/internal/domain/core/errors"
-	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/domain/orders"
+	domainErrors "github.com/evertontomalok/distributed-system-go/internal/core/domain/errors"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
+	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/core/orders"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/services/aws"
 	"github.com/evertontomalok/distributed-system-go/pkg/helpers"
 	"github.com/evertontomalok/distributed-system-go/pkg/utils"

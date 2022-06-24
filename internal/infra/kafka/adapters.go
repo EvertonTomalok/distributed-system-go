@@ -2,9 +2,9 @@ package kafka
 
 import (
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/broker"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/broker"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 )
 
 // The publisher will be injected when some command starts (server, wokers, orchestrator, etc.), by the Method NewPublisher

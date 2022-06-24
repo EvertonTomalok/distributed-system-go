@@ -3,8 +3,8 @@ package event
 import (
 	"context"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/ports"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/ports"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 )
 
 var EventsAdapter ports.EventsSourcePort

@@ -17,7 +17,7 @@ var runWorkerBalanceWorker = &cobra.Command{
 }
 
 func init() {
-	viper.BindEnv("Kafka.Port", "KAFKA_PORT")
-	viper.BindEnv("Kafka.Host", "KAFKA_HOST")
+	_ = viper.BindEnv("Kafka.Port", "KAFKA_PORT")
+	_ = viper.BindEnv("Kafka.Host", "KAFKA_HOST")
 	rootCmd.AddCommand(runWorkerBalanceWorker)
 }

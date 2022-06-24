@@ -6,9 +6,9 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/evertontomalok/distributed-system-go/internal/app/shared"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/methods"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/orders"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/core/methods"
+	"github.com/evertontomalok/distributed-system-go/internal/core/orders"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/postgres"
 	"github.com/spf13/viper"

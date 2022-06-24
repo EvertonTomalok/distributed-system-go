@@ -7,7 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
 	"golang.org/x/net/context"
 )
 
@@ -26,10 +26,15 @@ func (a *Adapter) GetAllMethods(ctx context.Context) ([]entities.Method, error) 
 		SELECT id, name, installment FROM methods;
 	`
 
+	var methods []entities.Method
+
 	rows, err := a.Db.QueryContext(ctx, sqlStmt)
+	if err != nil {
+		return methods, err
+	}
+
 	defer rows.Close()
 
-	var methods []entities.Method
 	if err != nil {
 		log.Info("Any method was found.")
 		return methods, nil
@@ -97,6 +102,10 @@ func (a *Adapter) GetOrdersByUserId(ctx context.Context, userId string, offset i
 	var orders []entities.Order
 
 	rows, err := a.Db.QueryContext(ctx, sqlStmt, userId, offset, limit)
+	if err != nil {
+		return orders, err
+	}
+
 	defer rows.Close()
 
 	if err != nil {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 	log "github.com/sirupsen/logrus"
 )
 

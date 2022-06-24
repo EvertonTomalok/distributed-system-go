@@ -6,8 +6,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/domain/core/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
+	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 	"github.com/oklog/ulid"
 
 	"github.com/ThreeDotsLabs/watermill"

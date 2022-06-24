@@ -21,10 +21,10 @@ var runCmd = &cobra.Command{
 }
 
 func init() {
-	viper.BindEnv("Host", "HOST")
-	viper.BindEnv("Port", "PORT")
-	viper.BindEnv("Kafka.Port", "KAFKA_PORT")
-	viper.BindEnv("Kafka.Host", "KAFKA_HOST")
-	viper.BindEnv("Postgres.Host", "POSTGRES_HOST")
+	_ = viper.BindEnv("Host", "HOST")
+	_ = viper.BindEnv("Port", "PORT")
+	_ = viper.BindEnv("Kafka.Port", "KAFKA_PORT")
+	_ = viper.BindEnv("Kafka.Host", "KAFKA_HOST")
+	_ = viper.BindEnv("Postgres.Host", "POSTGRES_HOST")
 	rootCmd.AddCommand(runCmd)
 }

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	application "github.com/evertontomalok/distributed-system-go/internal/app"
-	event "github.com/evertontomalok/distributed-system-go/internal/domain/events"
+	event "github.com/evertontomalok/distributed-system-go/internal/core/events"
 	mongoDBAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/mongodb"
 	"github.com/evertontomalok/distributed-system-go/internal/ui/orchestrator"
 	"github.com/spf13/cobra"
@@ -21,7 +21,7 @@ var runOrchestrator = &cobra.Command{
 }
 
 func init() {
-	viper.BindEnv("Kafka.Port", "KAFKA_PORT")
-	viper.BindEnv("Kafka.Host", "KAFKA_HOST")
+	_ = viper.BindEnv("Kafka.Port", "KAFKA_PORT")
+	_ = viper.BindEnv("Kafka.Host", "KAFKA_HOST")
 	rootCmd.AddCommand(runOrchestrator)
 }
