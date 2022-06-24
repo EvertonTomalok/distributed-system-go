@@ -8,8 +8,8 @@ import (
 
 const (
 	PROCESSING string = "PROCESSING"
-	APPROVED          = "APPROVED"
-	CANCELED          = "CANCELED"
+	APPROVED   string = "APPROVED"
+	CANCELED   string = "CANCELED"
 )
 
 type Order struct {

@@ -3,7 +3,7 @@ package event
 import (
 	"context"
 
-	"github.com/evertontomalok/distributed-system-go/internal/core/domain/ports"
+	"github.com/evertontomalok/distributed-system-go/internal/app/ports"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 )
 

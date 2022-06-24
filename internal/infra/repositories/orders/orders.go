@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/evertontomalok/distributed-system-go/internal/app/ports"
 	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
 	"github.com/evertontomalok/distributed-system-go/internal/core/domain/errors"
-	"github.com/evertontomalok/distributed-system-go/internal/core/domain/ports"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 	methodsRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/methods"
 	uuid "github.com/satori/go.uuid"
