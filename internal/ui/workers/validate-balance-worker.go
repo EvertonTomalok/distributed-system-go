@@ -7,8 +7,8 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/evertontomalok/distributed-system-go/internal/app"
-	"github.com/evertontomalok/distributed-system-go/internal/core/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
+	"github.com/evertontomalok/distributed-system-go/pkg/broker"
 	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"

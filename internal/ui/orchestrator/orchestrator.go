@@ -7,10 +7,10 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/evertontomalok/distributed-system-go/internal/app"
-	"github.com/evertontomalok/distributed-system-go/internal/core/broker"
 	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 	eventSource "github.com/evertontomalok/distributed-system-go/internal/core/events"
+	"github.com/evertontomalok/distributed-system-go/pkg/broker"
 	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 	log "github.com/sirupsen/logrus"
 
