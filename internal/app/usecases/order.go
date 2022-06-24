@@ -6,7 +6,7 @@ import (
 
 	domainErrors "github.com/evertontomalok/distributed-system-go/internal/core/domain/errors"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
-	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/core/orders"
+	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/orders"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/services/aws"
 	"github.com/evertontomalok/distributed-system-go/pkg/helpers"
 	"github.com/evertontomalok/distributed-system-go/pkg/utils"

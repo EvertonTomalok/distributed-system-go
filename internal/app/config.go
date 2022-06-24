@@ -3,14 +3,14 @@ package app
 import (
 	"context"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/evertontomalok/distributed-system-go/internal/app/shared"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/core/methods"
-	"github.com/evertontomalok/distributed-system-go/internal/core/orders"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/database/postgres"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
-	"github.com/evertontomalok/distributed-system-go/internal/infra/postgres"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/repositories/methods"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/repositories/orders"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/spf13/viper"
 )
 

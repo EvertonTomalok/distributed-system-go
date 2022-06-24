@@ -8,7 +8,7 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/core/domain/errors"
 	"github.com/evertontomalok/distributed-system-go/internal/core/domain/ports"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/core/methods"
+	methodsRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/methods"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -19,7 +19,7 @@ var (
 )
 
 func SaveOrder(ctx context.Context, orderRequest dto.OrderRequest) (entities.Order, error) {
-	method, err := methods.MethodsDBAdapter.GetMethodByNameAndInstallment(ctx, orderRequest.Method, orderRequest.Installment)
+	method, err := methodsRepository.MethodsDBAdapter.GetMethodByNameAndInstallment(ctx, orderRequest.Method, orderRequest.Installment)
 	if err != nil {
 		return entities.Order{}, errors.InvalidMethod
 	}

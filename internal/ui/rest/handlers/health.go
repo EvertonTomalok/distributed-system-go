@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/evertontomalok/distributed-system-go/internal/infra/postgres"
+	"github.com/evertontomalok/distributed-system-go/internal/infra/database/postgres"
 	"github.com/gin-gonic/gin"
 )
 

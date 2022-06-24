@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
-	"github.com/evertontomalok/distributed-system-go/internal/core/methods"
+	methodsRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/methods"
 	"github.com/evertontomalok/distributed-system-go/internal/infra/services/aws"
 	"github.com/gin-gonic/gin"
 )
 
 func GetAllMethods(c *gin.Context) *gin.Context {
-	allMethods, err := methods.GetMethods(c.Request.Context())
+	allMethods, err := methodsRepository.GetMethods(c.Request.Context())
 	if err != nil {
 		if err := c.AbortWithError(http.StatusNotFound, err); err != nil {
 			aws.SendErrorToCloudWatch(c, err)

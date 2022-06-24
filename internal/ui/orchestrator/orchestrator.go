@@ -11,11 +11,11 @@ import (
 	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 	eventSource "github.com/evertontomalok/distributed-system-go/internal/core/events"
-	"github.com/evertontomalok/distributed-system-go/internal/core/orders"
 	"github.com/evertontomalok/distributed-system-go/pkg/utils"
 	log "github.com/sirupsen/logrus"
 
 	kafkaAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/kafka"
+	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/orders"
 )
 
 func StartOrchestrator(ctx context.Context, config app.Config) {
@@ -160,10 +160,10 @@ func orderIsCompleted(ctx context.Context, msg *message.Message) error {
 	}
 
 	if allStepsOk(doc.Steps) == true {
-		err := orders.OrdersDBAdapter.UpdateStatusByOrderId(ctx, internalMessage.ID, entities.APPROVED)
+		err := ordersRepository.OrdersDBAdapter.UpdateStatusByOrderId(ctx, internalMessage.ID, entities.APPROVED)
 		return err
 	}
-	err := orders.OrdersDBAdapter.UpdateStatusByOrderId(ctx, internalMessage.ID, entities.CANCELED)
+	err := ordersRepository.OrdersDBAdapter.UpdateStatusByOrderId(ctx, internalMessage.ID, entities.CANCELED)
 	return err
 }
 

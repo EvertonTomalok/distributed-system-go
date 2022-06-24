@@ -3,7 +3,7 @@ package cmd
 import (
 	application "github.com/evertontomalok/distributed-system-go/internal/app"
 	event "github.com/evertontomalok/distributed-system-go/internal/core/events"
-	mongoDBAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/mongodb"
+	mongoDBAdapter "github.com/evertontomalok/distributed-system-go/internal/infra/database/mongodb"
 	"github.com/evertontomalok/distributed-system-go/internal/ui/orchestrator"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
