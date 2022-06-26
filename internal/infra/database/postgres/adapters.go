@@ -189,7 +189,7 @@ func (a *Adapter) DeleteAllOrdersFromUserTest(ctx context.Context) error {
 		"user_test_invalid",
 	)
 
-	log.Printf("%+v", result)
+	log.Debugf("%+v", result)
 
 	if err != nil {
 		log.Println(err)

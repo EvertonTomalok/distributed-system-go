@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/evertontomalok/distributed-system-go/internal/app"
@@ -46,6 +45,23 @@ func process(messages <-chan *message.Message) {
 	}
 }
 
+func messageGenerator(internalMessage dto.BrokerInternalMessage) <-chan error {
+	loopController := utils.LoopController{}
+	channelErrorHandler := make(chan error)
+
+	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
+		loopController.IncrementTask()
+		go func(t string, i dto.BrokerInternalMessage) {
+			channelErrorHandler <- kafkaAdapter.PublishInternalMessageToTopic(t, i, dto.StartEvent)
+			loopController.DecrementTask()
+			if !loopController.Running() {
+				close(channelErrorHandler)
+			}
+		}(topic, internalMessage)
+	}
+	return channelErrorHandler
+}
+
 func processMessage(msg *message.Message) error {
 	event := msg.Metadata.Get("event")
 	switch event {
@@ -73,7 +89,6 @@ func processMessage(msg *message.Message) error {
 
 func triggerWorkers(msg *message.Message) {
 	message, _ := broker.ParseOrderMessage(msg)
-	var wg sync.WaitGroup
 
 	step := dto.EventSteps{
 		Event:   dto.StartEvent,
@@ -102,17 +117,15 @@ func triggerWorkers(msg *message.Message) {
 		return
 	}
 
-	for _, topic := range [2]string{broker.UserStatusValidatorTopic, broker.UserBalanceValidatorTopic} {
-		wg.Add(1)
-		go func(t string, i dto.BrokerInternalMessage) {
-			defer wg.Done()
-			err = kafkaAdapter.PublishInternalMessageToTopic(t, i, dto.StartEvent)
-			if err != nil {
-				aws.SendErrorToCloudWatch(msg.Context(), err)
-			}
-		}(topic, internalMessage)
+	ch := messageGenerator(internalMessage)
+	for errorResponse := range ch {
+		switch {
+		case errorResponse != nil:
+			log.Errorf("Some error occurred processing %+v. Error = %+v", internalMessage, errorResponse)
+		default:
+			log.Debug("Message sent!")
+		}
 	}
-	wg.Wait()
 }
 
 func updateStep(msg *message.Message, message string) {
