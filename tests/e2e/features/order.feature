@@ -8,7 +8,7 @@ Feature: Orders Tests
 
         When create orders
         Then check status is "PROCESSING"
-        Then check user has orders
+        Then check user have orders
 
 
     Scenario: Invalid method order

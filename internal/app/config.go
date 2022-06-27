@@ -76,8 +76,8 @@ func InitKafka(ctx context.Context, cfg Config) {
 }
 
 func ConfigureFlags() {
-	// Todo implement some logic simulating getting values from a cache service with real time watch changes,
-	//	like redis os etcd
+	// Todo implement some logic simulating getting values from a cache service with real time watching changes,
+	//	like redis or etcd
 	shared.Flags = map[string]bool{
 		dto.PostOrderFlag:         true,
 		dto.GetOrderByIdFlag:      true,

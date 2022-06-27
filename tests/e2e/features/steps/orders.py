@@ -40,7 +40,7 @@ def step_impl(context, status):
         assert r["status"] == status
 
 
-@then("check user has orders")
+@then("check user have orders")
 def step_impl(context):
     assert get_orders_from_user(context.user_id)["total"] > 0
 
