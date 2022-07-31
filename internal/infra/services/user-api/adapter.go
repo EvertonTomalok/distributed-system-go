@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
-	log "github.com/sirupsen/logrus"
 )
 
 var UserAdapter *Adapter
@@ -22,6 +21,8 @@ var endpoints map[string]string = map[string]string{
 }
 
 func (a *Adapter) GetUserStatus(userId string) (dto.UserResponse, error) {
+	userResponse := dto.UserResponse{}
+
 	endpoint := fmt.Sprintf(endpoints["user"], userId)
 	req, err := http.NewRequest(
 		"GET",
@@ -32,21 +33,21 @@ func (a *Adapter) GetUserStatus(userId string) (dto.UserResponse, error) {
 		),
 		nil,
 	)
+
 	if err != nil {
-		log.Panic(err)
+		return userResponse.ReturnWithError(err)
 	}
 
 	resp, err := a.Client.Do(req)
 	if err != nil {
-		return dto.UserResponse{}, err
+		return userResponse.ReturnWithError(err)
 	}
 	defer resp.Body.Close()
 
-	userResponse := dto.UserResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&userResponse)
 
 	if err != nil {
-		return dto.UserResponse{}, err
+		return userResponse.ReturnWithError(err)
 	}
 
 	return userResponse, nil
