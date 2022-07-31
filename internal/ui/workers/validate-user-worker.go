@@ -48,7 +48,11 @@ func validateUserStatusOrder(msg *message.Message) error {
 		log.Printf("validate user status -> %+v | %+v | %+v \n\n", internalMessage, metadata, err)
 	}
 
-	userStatusResponse := userapi.UserAdapter.GetUserStatus(internalMessage.UserId)
+	userStatusResponse, err := userapi.UserAdapter.GetUserStatus(internalMessage.UserId)
+	if err != nil {
+		return err
+	}
+
 	if userStatusResponse.IsValid {
 		if err := kafkaAdapter.PublishInternalMessageToTopic(broker.OrchestratorTopic, internalMessage, dto.ResultValidateUserStatus); err != nil {
 			return err

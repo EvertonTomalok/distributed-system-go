@@ -21,7 +21,7 @@ var endpoints map[string]string = map[string]string{
 	"user": "user/%s",
 }
 
-func (a *Adapter) GetUserStatus(userId string) dto.UserResponse {
+func (a *Adapter) GetUserStatus(userId string) (dto.UserResponse, error) {
 	endpoint := fmt.Sprintf(endpoints["user"], userId)
 	req, err := http.NewRequest(
 		"GET",
@@ -38,12 +38,16 @@ func (a *Adapter) GetUserStatus(userId string) dto.UserResponse {
 
 	resp, err := a.Client.Do(req)
 	if err != nil {
-		log.Panic(err)
+		return dto.UserResponse{}, err
 	}
 	defer resp.Body.Close()
 
 	userResponse := dto.UserResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&userResponse)
 
-	return userResponse
+	if err != nil {
+		return dto.UserResponse{}, err
+	}
+
+	return userResponse, nil
 }
