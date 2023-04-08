@@ -33,7 +33,7 @@ func Router() *gin.Engine {
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:5000
+// @host      localhost:3000
 // @BasePath  /api
 func RunServer(ctx context.Context, config config.Config) {
 	done := utils.MakeDoneSignal()

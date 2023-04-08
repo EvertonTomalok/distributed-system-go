@@ -95,7 +95,7 @@ You can use postman, where the collection with the request, is saved in the fold
 
 ## Create order using curl
 ```
-curl --location --request POST '0.0.0.0:5000/api/orders' \
+curl --location --request POST '0.0.0.0:8000/api/orders' \
 --form 'value="1000.00"' \
 --form 'user_id="uuuu-aaaa-bbbb"' \
 --form 'installment="1"' \
@@ -130,7 +130,7 @@ With Balance exceeding limit from user
 # Get order status from order using curl
 
 ```
-curl --location --request GET '0.0.0.0:5000/api/order/<order-id>'
+curl --location --request GET '0.0.0.0:8000/api/order/<order-id>'
 ```
 
 
@@ -150,7 +150,7 @@ curl --location --request GET '0.0.0.0:5000/api/order/<order-id>'
 # Get orders from user
 
 ```
-curl --location --request GET '0.0.0.0:5000/api/orders/<user_id>?offset=0&limit=100'
+curl --location --request GET '0.0.0.0:8000/api/orders/<user_id>?offset=0&limit=100'
 ```
 
 `Returns`
