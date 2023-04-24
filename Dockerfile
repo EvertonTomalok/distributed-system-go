@@ -1,7 +1,9 @@
-
-FROM golang:1.18
+FROM golang:1.19 AS build
 WORKDIR /go/src/app
 COPY . .
-RUN go get -d -v ./...
 RUN go install -v ./...
-RUN go build .
+RUN CGO_ENABLED=0 GOOS=linux go build -o exe main.go
+
+FROM alpine
+RUN apk add --no-cache ca-certificates
+COPY --from=build /go/src/app .
