@@ -82,7 +82,7 @@ services:
       - PORT=8010
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
-    command: go run . server
+    command: ["/exe", "server"]
     ports:
       - "0.0.0.0:8010:8010"
     volumes:
@@ -90,20 +90,20 @@ services:
   validate-balance-worker:
     platform: linux/x86_64
     container_name: validate-balance-worker
-    image: golang:1.18
+    build: .
     depends_on:
       - kafka
+      - user-api
     environment:
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092
     volumes:
       -  .:/go/src/app
-    working_dir: /go/src/app
-    command: go run . validate-balance-worker
+    command: ["/exe", "validate-balance-worker"]
   validate-user-status-worker:
     platform: linux/x86_64
     container_name: validate-user-status-worker
-    image: golang:1.18
+    build: .
     depends_on:
       - kafka
       - user-api
@@ -113,12 +113,11 @@ services:
       - USERAPI_BASEURL=http://user-api:8000/api/
     volumes:
       -  .:/go/src/app
-    working_dir: /go/src/app
-    command: go run . validate-user-status-worker
+    command: ["/exe", "validate-user-status-worker"]
   orchestrator:
     platform: linux/x86_64
     container_name: orchestrator
-    image: golang:1.18
+    build: .
     depends_on:
       - kafka
       - mongodb
@@ -128,9 +127,7 @@ services:
       - MONGODB_HOST=mongodb://root:secret@mongodb:27017/?maxPoolSize=20&w=majority
     volumes:
       -  .:/go/src/app
-    working_dir: /go/src/app
-    command: go run . orchestrator
-
+    command: ["/exe", "orchestrator"]
   # TESTS
   test-e2e:
     platform: linux/x86_64
