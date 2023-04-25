@@ -2,7 +2,7 @@ import os
 
 import requests
 
-url = os.getenv("BASE_URL", "http://0.0.0.0:8080/api")
+url = os.getenv("BASE_URL", "http://0.0.0.0:8010/api")
 
 
 def create_order(user_id: str, value: float, installment: int, method: str) -> dict:

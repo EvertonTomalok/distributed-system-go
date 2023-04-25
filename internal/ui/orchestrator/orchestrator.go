@@ -110,10 +110,9 @@ func triggerWorkers(msg *message.Message) {
 		Steps:        steps,
 	}
 
-	err := eventSourceRepository.CreateEventSource(msg.Context(), internalMessage)
-
-	if err != nil {
+	if err := eventSourceRepository.CreateEventSource(msg.Context(), internalMessage); err != nil {
 		aws.SendErrorToCloudWatch(msg.Context(), err)
+		// create fallback to create event source after, or cancel order and make
 		return
 	}
 
@@ -144,6 +143,7 @@ func updateStep(msg *message.Message, message string) {
 
 	if err != nil {
 		aws.SendErrorToCloudWatch(msg.Context(), err)
+		// create fallback to create event source after, or cancel order and make compensation
 		return
 	}
 
@@ -156,6 +156,7 @@ func updateStep(msg *message.Message, message string) {
 		err = eventSourceRepository.UpdateStep(context.Background(), internalMessage.ID, step)
 		if err != nil {
 			aws.SendErrorToCloudWatch(msg.Context(), err)
+			// create fallback to create event source after, or cancel order and make compensation
 			return
 		}
 		compensationTrigger(internalMessage, &metadata)
@@ -173,6 +174,7 @@ func compensationTrigger(internalMessage dto.BrokerInternalMessage, metadata *dt
 		err := kafkaAdapter.PublishInternalMessageToTopic(broker.UserStatusCompensationTopic, internalMessage, dto.CompensationValidateUserStatus)
 		if err != nil {
 			aws.SendErrorToCloudWatch(context.TODO(), err)
+			// create fallback to create event source after, or cancel order and make compensation
 			return
 		}
 	}

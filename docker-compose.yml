@@ -69,10 +69,16 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
       KAFKA_CLUSTERS_0_NAME: "KAFKA LOCAL"
       KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
-  web:
+  application:
     platform: linux/x86_64
     build: .
+    image: application
+    command: ["echo", "image built."]
+  web:
+    platform: linux/x86_64
+    image: application
     depends_on:
+      - application
       - kafka
       - db
     environment:
@@ -88,8 +94,9 @@ services:
       -  .:/go/src/app
   validate-balance-worker:
     platform: linux/x86_64
-    build: .
+    image: application
     depends_on:
+      - application
       - kafka
       - user-api
     environment:
@@ -100,8 +107,9 @@ services:
     command: ["/exe", "validate-balance-worker"]
   validate-user-status-worker:
     platform: linux/x86_64
-    build: .
+    image: application
     depends_on:
+      - application
       - kafka
       - user-api
     environment:
@@ -113,8 +121,9 @@ services:
     command: ["/exe", "validate-user-status-worker"]
   orchestrator:
     platform: linux/x86_64
-    build: .
+    image: application
     depends_on:
+      - application
       - kafka
       - mongodb
     environment:

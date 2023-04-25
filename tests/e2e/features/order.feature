@@ -28,7 +28,7 @@ Feature: Orders Tests
 
 
         When create orders
-        Then check after 0.5 second(s) status orders are "APPROVED"
+        Then check after 1 second(s) status orders are "APPROVED"
 
 
     Scenario: Insert CANCELED orders
@@ -39,7 +39,7 @@ Feature: Orders Tests
 
 
         When create orders
-        Then check after 0.5 second(s) status orders are "CANCELED"
+        Then check after 1 second(s) status orders are "CANCELED"
 
     Scenario: Delete All orders from user test
         Given Delete all orders from user test
