@@ -16,7 +16,7 @@ services:
      - 0.0.0.0:5432:5432
   mongodb:
     platform: linux/x86_64
-    image: mongo:latest
+    image: mongo:4.4.20
     container_name: mongodb
     ports:
       - 0.0.0.0:27017:27017
@@ -71,7 +71,6 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
   web:
     platform: linux/x86_64
-    container_name: web
     build: .
     depends_on:
       - kafka
@@ -89,7 +88,6 @@ services:
       -  .:/go/src/app
   validate-balance-worker:
     platform: linux/x86_64
-    container_name: validate-balance-worker
     build: .
     depends_on:
       - kafka
@@ -102,7 +100,6 @@ services:
     command: ["/exe", "validate-balance-worker"]
   validate-user-status-worker:
     platform: linux/x86_64
-    container_name: validate-user-status-worker
     build: .
     depends_on:
       - kafka
@@ -116,7 +113,6 @@ services:
     command: ["/exe", "validate-user-status-worker"]
   orchestrator:
     platform: linux/x86_64
-    container_name: orchestrator
     build: .
     depends_on:
       - kafka
