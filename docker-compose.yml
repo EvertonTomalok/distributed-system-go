@@ -69,11 +69,19 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
       KAFKA_CLUSTERS_0_NAME: "KAFKA LOCAL"
       KAFKA_CLUSTERS_0_ZOOKEEPER: "zookeeper:2181"
+  
+  image_build:
+    platform: linux/x86_64
+    image: application
+    command: ['echo', 'build completed']  # any linux command which directly terminates.
+    build:
+      context: .
+      dockerfile: Dockerfile
   web:
     platform: linux/x86_64
-    container_name: web
-    build: .
+    image: application
     depends_on:
+      - image_build
       - kafka
       - db
     environment:
@@ -89,9 +97,9 @@ services:
       -  .:/go/src/app
   validate-balance-worker:
     platform: linux/x86_64
-    container_name: validate-balance-worker
-    build: .
+    image: application
     depends_on:
+      - image_build
       - kafka
       - user-api
     environment:
@@ -102,9 +110,9 @@ services:
     command: ["/exe", "validate-balance-worker"]
   validate-user-status-worker:
     platform: linux/x86_64
-    container_name: validate-user-status-worker
-    build: .
+    image: application
     depends_on:
+      - image_build
       - kafka
       - user-api
     environment:
@@ -116,11 +124,12 @@ services:
     command: ["/exe", "validate-user-status-worker"]
   orchestrator:
     platform: linux/x86_64
-    container_name: orchestrator
-    build: .
+    image: application
     depends_on:
       - kafka
       - mongodb
+      - db
+      - image_build
     environment:
       - KAFKA_HOST=kafka
       - KAFKA_PORT=29092

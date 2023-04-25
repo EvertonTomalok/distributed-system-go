@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/evertontomalok/distributed-system-go/internal/core/domain/entities"
 	domainErrors "github.com/evertontomalok/distributed-system-go/internal/core/domain/errors"
 	"github.com/evertontomalok/distributed-system-go/internal/core/dto"
 	ordersRepository "github.com/evertontomalok/distributed-system-go/internal/infra/repositories/orders"
@@ -15,48 +16,53 @@ import (
 )
 
 func CreateOrder(c *gin.Context) *gin.Context {
+	ctx := c.Request.Context()
 	if status := utils.CheckFeatureFlag(dto.PostOrderFlag, c); !status {
 		log.Info("Post Order Flag is disabled.")
+		// Redirect creation order to fallback
 		c.AbortWithStatus(http.StatusBadGateway)
 		return c
 	}
 	orderRequest := dto.OrderRequest{}
 
-	err := c.ShouldBind(&orderRequest)
-
-	if err == nil {
-		order, err := ordersRepository.SaveOrder(c.Request.Context(), orderRequest)
-		if err != nil {
-			switch err {
-			case domainErrors.InvalidMethod, domainErrors.InvalidOrder:
-				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			default:
-				if err := c.AbortWithError(http.StatusNotFound, err); err != nil {
-					log.Fatalf("Something went wrong: %+v", err)
-				}
-			}
-			return c
-		}
-
-		if err := helpers.TriggerValidation(order); err != nil {
-			aws.SendErrorToCloudWatch(c, err)
-			c.String(http.StatusInternalServerError, "Something went wrong. Try again.")
-			return c
-		}
-
-		orderResponse := dto.OrderResponse{
-			Id:          order.ID,
-			Status:      order.Status,
-			Value:       order.Value,
-			UserId:      orderRequest.UserId,
-			Installment: orderRequest.Installment,
-			Method:      orderRequest.Method,
-		}
-		c.JSON(http.StatusCreated, orderResponse)
+	if err := c.ShouldBind(&orderRequest); err != nil {
+		c.String(http.StatusUnprocessableEntity, "Something went wrong. Try again.")
 		return c
 	}
-	c.String(http.StatusUnprocessableEntity, "Something went wrong. Try again.")
+
+	order, err := ordersRepository.SaveOrder(ctx, orderRequest)
+	if err != nil {
+		switch err {
+		case domainErrors.InvalidMethod, domainErrors.InvalidOrder:
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		default:
+			if err := c.AbortWithError(http.StatusNotFound, err); err != nil {
+				log.Fatalf("Something went wrong: %+v", err)
+			}
+		}
+		return c
+	}
+
+	if err := helpers.TriggerValidation(order); err != nil {
+		aws.SendErrorToCloudWatch(c, err)
+		if err = ordersRepository.OrdersDBAdapter.UpdateStatusByOrderId(ctx, order.ID, entities.CANCELED); err != nil {
+			aws.SendErrorToCloudWatch(ctx, err)
+		}
+		c.String(http.StatusInternalServerError, "Something went wrong. Try again.")
+		return c
+	}
+
+	orderResponse := dto.OrderResponse{
+		Id:          order.ID,
+		Status:      order.Status,
+		Value:       order.Value,
+		UserId:      orderRequest.UserId,
+		Installment: orderRequest.Installment,
+		Method:      orderRequest.Method,
+	}
+	c.JSON(http.StatusCreated, orderResponse)
 	return c
+
 }
 
 func GetAllOrdersFromUserById(c *gin.Context) *gin.Context {
@@ -122,7 +128,6 @@ func GetOrderById(c *gin.Context) *gin.Context {
 	orderId := c.Param("orderId")
 
 	order, err := ordersRepository.OrdersDBAdapter.GetOrderById(c.Request.Context(), orderId)
-
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		return c
